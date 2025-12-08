@@ -4,6 +4,9 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -23,6 +26,8 @@ import kotlinx.coroutines.launch
 fun PatientDetailScreen(navController: NavController, patientId: Int) {
     var patient by remember { mutableStateOf<Patient?>(null) }
     var records by remember { mutableStateOf<List<MedicalRecord>>(emptyList()) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    var showEditSheet by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
@@ -48,7 +53,15 @@ fun PatientDetailScreen(navController: NavController, patientId: Int) {
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text(patient!!.name) }
+                    title = { Text(patient!!.name) },
+                    actions = {
+                        IconButton(onClick = { showEditSheet = true }) {
+                            Icon(Icons.Default.Edit, contentDescription = "Edit")
+                        }
+                        IconButton(onClick = { showDeleteDialog = true }) {
+                            Icon(Icons.Default.Delete, contentDescription = "Delete")
+                        }
+                    }
                 )
             }
         ) { paddingValues ->
@@ -155,6 +168,55 @@ fun PatientDetailScreen(navController: NavController, patientId: Int) {
                         )
                     }
                 }
+            }
+        }
+        
+        // Delete Confirmation Dialog
+        if (showDeleteDialog) {
+            AlertDialog(
+                onDismissRequest = { showDeleteDialog = false },
+                title = { Text("Hapus Pasien") },
+                text = { Text("Apakah Anda yakin ingin menghapus pasien ${patient!!.name}? Semua rekam medis akan ikut terhapus.") },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            scope.launch {
+                                try {
+                                    // Delete medical records first
+                                    SupabaseClient.client.from("medical_records").delete {
+                                        filter { eq("patient_id", patientId) }
+                                    }
+                                    // Then delete patient
+                                    SupabaseClient.client.from("patients").delete {
+                                        filter { eq("id", patientId) }
+                                    }
+                                    Toast.makeText(context, "Pasien berhasil dihapus", Toast.LENGTH_SHORT).show()
+                                    navController.popBackStack()
+                                } catch (e: Exception) {
+                                    Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_LONG).show()
+                                }
+                            }
+                            showDeleteDialog = false
+                        },
+                        colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
+                    ) {
+                        Text("Hapus")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showDeleteDialog = false }) {
+                        Text("Batal")
+                    }
+                }
+            )
+        }
+        
+        // Edit Modal Sheet
+        if (showEditSheet) {
+            ModalBottomSheet(
+                onDismissRequest = { showEditSheet = false }
+            ) {
+                EditPatientScreen(navController, patient!!)
             }
         }
     }
