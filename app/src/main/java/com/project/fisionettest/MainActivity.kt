@@ -18,6 +18,7 @@ import com.project.fisionettest.navigation.BottomNavItem
 import com.project.fisionettest.navigation.Screen
 import com.project.fisionettest.ui.auth.LoginScreen
 import com.project.fisionettest.ui.auth.RegisterScreen
+import com.project.fisionettest.ui.appointment.AppointmentScreen
 import com.project.fisionettest.ui.dashboard.DashboardScreen
 import com.project.fisionettest.ui.home.HomeScreen
 import com.project.fisionettest.ui.patient.AddMedicalRecordScreen
@@ -43,6 +44,7 @@ class MainActivity : ComponentActivity() {
                     val bottomNavRoutes = listOf(
                         BottomNavItem.Dashboard.route,
                         BottomNavItem.Patients.route,
+                        BottomNavItem.Appointments.route,
                         BottomNavItem.Profile.route
                     )
                     
@@ -88,6 +90,9 @@ class MainActivity : ComponentActivity() {
                             }
                             composable(BottomNavItem.Patients.route) {
                                 HomeScreen(navController)
+                            }
+                            composable(BottomNavItem.Appointments.route) {
+                                AppointmentScreen(navController)
                             }
                             composable(BottomNavItem.Profile.route) {
                                 ProfileScreen(navController)

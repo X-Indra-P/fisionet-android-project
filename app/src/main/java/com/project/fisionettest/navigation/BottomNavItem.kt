@@ -1,9 +1,10 @@
 package com.project.fisionettest.navigation
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.ui.graphics.vector.ImageVector
 
 sealed class BottomNavItem(
@@ -13,9 +14,10 @@ sealed class BottomNavItem(
 ) {
     object Dashboard : BottomNavItem("dashboard", Icons.Default.Home, "Dashboard")
     object Patients : BottomNavItem("home", Icons.Default.List, "Pasien")
+    object Appointments : BottomNavItem("appointments", Icons.Default.DateRange, "Jadwal")
     object Profile : BottomNavItem("profile", Icons.Default.Person, "Profil")
     
     companion object {
-        fun items() = listOf(Dashboard, Patients, Profile)
+        fun items() = listOf(Dashboard, Patients, Appointments, Profile)
     }
 }

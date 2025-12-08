@@ -146,16 +146,70 @@ fun PatientDetailScreen(navController: NavController, patientId: Int) {
                 }
                 
                 items(records) { record ->
+                    var showDeleteRecordDialog by remember { mutableStateOf(false) }
+                    
                      Card(
                         modifier = Modifier.fillMaxWidth(),
                          colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
                     ) {
                         Column(modifier = Modifier.padding(12.dp)) {
-                            Text(text = "Tanggal: ${record.date}", fontWeight = FontWeight.Bold)
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(text = "Tanggal: ${record.date}", fontWeight = FontWeight.Bold)
+                                IconButton(
+                                    onClick = { showDeleteRecordDialog = true },
+                                    modifier = Modifier.size(24.dp)
+                                ) {
+                                    Icon(
+                                        Icons.Default.Delete,
+                                        contentDescription = "Hapus",
+                                        tint = MaterialTheme.colorScheme.error
+                                    )
+                                }
+                            }
                             Spacer(modifier = Modifier.height(4.dp))
                             Text(text = "Catatan: ${record.notes}")
                             Text(text = "Penanganan: ${record.treatment}")
                         }
+                    }
+                    
+                    if (showDeleteRecordDialog) {
+                        AlertDialog(
+                            onDismissRequest = { showDeleteRecordDialog = false },
+                            title = { Text("Hapus Rekam Medis") },
+                            text = { Text("Apakah Anda yakin ingin menghapus rekam medis ini?") },
+                            confirmButton = {
+                                TextButton(
+                                    onClick = {
+                                        scope.launch {
+                                            try {
+                                                SupabaseClient.client.from("medical_records").delete {
+                                                    filter { eq("id", record.id!!) }
+                                                }
+                                                // Refresh records
+                                                records = SupabaseClient.client.from("medical_records").select {
+                                                    filter { eq("patient_id", patientId) }
+                                                }.decodeList()
+                                                Toast.makeText(context, "Rekam medis dihapus", Toast.LENGTH_SHORT).show()
+                                            } catch (e: Exception) {
+                                                Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                                            }
+                                        }
+                                        showDeleteRecordDialog = false
+                                    },
+                                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
+                                ) {
+                                    Text("Hapus")
+                                }
+                            },
+                            dismissButton = {
+                                TextButton(onClick = { showDeleteRecordDialog = false }) {
+                                    Text("Batal")
+                                }
+                            }
+                        )
                     }
                 }
                 
