@@ -61,7 +61,7 @@ fun LoginScreen(navController: NavController) {
                             this.password = password
                         }
                         // Login success
-                        navController.navigate(Screen.Home.route) {
+                        navController.navigate("dashboard") {
                             popUpTo(Screen.Login.route) { inclusive = true }
                         }
                     } catch (e: Exception) {
