@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/loginFragment">
+
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.project.fisionettest.ui.auth.LoginFragment"
+        android:label="Login">
+        <action
+            android:id="@+id/action_login_to_register"
+            app:destination="@id/registerFragment" />
+        <action
+            android:id="@+id/action_login_to_dashboard"
+            app:destination="@id/dashboardFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/registerFragment"
+        android:name="com.project.fisionettest.ui.auth.RegisterFragment"
+        android:label="Register">
+        <action
+            android:id="@+id/action_register_to_login"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_register_to_dashboard"
+            app:destination="@id/dashboardFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/dashboardFragment"
+        android:name="com.project.fisionettest.ui.dashboard.DashboardFragment"
+        android:label="Dashboard">
+        <action
+            android:id="@+id/action_dashboard_to_add_patient"
+            app:destination="@id/addPatientFragment" />
+        <action
+            android:id="@+id/action_dashboard_to_patients"
+            app:destination="@id/homeFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.project.fisionettest.ui.home.HomeFragment"
+        android:label="Pasien">
+        <action
+            android:id="@+id/action_home_to_patient_detail"
+            app:destination="@id/patientDetailFragment" />
+        <action
+            android:id="@+id/action_home_to_add_patient"
+            app:destination="@id/addPatientFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/appointmentFragment"
+        android:name="com.project.fisionettest.ui.appointment.AppointmentFragment"
+        android:label="Appointment" />
+
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.project.fisionettest.ui.profile.ProfileFragment"
+        android:label="Profile">
+        <action
+            android:id="@+id/action_profile_to_login"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/nav_graph"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/patientDetailFragment"
+        android:name="com.project.fisionettest.ui.patient.PatientDetailFragment"
+        android:label="Detail Pasien">
+        <argument
+            android:name="patientId"
+            app:argType="integer" />
+        <action
+            android:id="@+id/action_patient_detail_to_edit"
+            app:destination="@id/editPatientFragment" />
+        <action
+            android:id="@+id/action_patient_detail_to_add_medical_record"
+            app:destination="@id/addMedicalRecordFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/addPatientFragment"
+        android:name="com.project.fisionettest.ui.patient.AddPatientFragment"
+        android:label="Tambah Pasien" />
+
+    <fragment
+        android:id="@+id/editPatientFragment"
+        android:name="com.project.fisionettest.ui.patient.EditPatientFragment"
+        android:label="Edit Pasien">
+        <argument
+            android:name="patientId"
+            app:argType="integer" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/addMedicalRecordFragment"
+        android:name="com.project.fisionettest.ui.patient.AddMedicalRecordFragment"
+        android:label="Tambah Rekam Medis">
+        <argument
+            android:name="patientId"
+            app:argType="integer" />
+    </fragment>
+
+</navigation>

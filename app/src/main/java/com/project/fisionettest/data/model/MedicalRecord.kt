@@ -8,6 +8,7 @@ data class MedicalRecord(
     val created_at: String? = null,
     val patient_id: Int,
     val date: String,
-    val notes: String,
-    val treatment: String
+    val diagnosis: String,
+    val treatment: String,
+    val notes: String? = null
 )
