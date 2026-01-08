@@ -21,7 +21,12 @@ class AppointmentAdapter : ListAdapter<Appointment, AppointmentAdapter.Appointme
 
     override fun onBindViewHolder(holder: AppointmentViewHolder, position: Int) {
         holder.bind(getItem(position))
+        holder.itemView.setOnClickListener {
+            onItemClick?.invoke(getItem(position))
+        }
     }
+
+    var onItemClick: ((Appointment) -> Unit)? = null
 
     class AppointmentViewHolder(
         private val binding: ItemAppointmentBinding
@@ -31,7 +36,22 @@ class AppointmentAdapter : ListAdapter<Appointment, AppointmentAdapter.Appointme
             binding.tvPatientName.text = "Pasien: ${appointment.patient_name ?: "N/A"}"
             binding.tvDate.text = "Tanggal: ${appointment.date}"
             binding.tvTime.text = "Waktu: ${appointment.time}"
-            binding.tvStatus.text = "Status: ${appointment.status}"
+            
+            if (!appointment.notes.isNullOrBlank()) {
+                binding.tvNotes.text = "Catatan: ${appointment.notes}"
+                binding.tvNotes.visibility = android.view.View.VISIBLE
+            } else {
+                binding.tvNotes.visibility = android.view.View.GONE
+            }
+
+            // Map DB Status -> UI Status for display
+            val uiStatus = when (appointment.status) {
+                "Terjadwal" -> "Menunggu"
+                "Selesai" -> "Hadir"
+                "Dibatalkan" -> "Tidak Hadir"
+                else -> appointment.status // Fallback
+            }
+            binding.tvStatus.text = "Status: $uiStatus"
         }
     }
 

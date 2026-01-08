@@ -67,15 +67,7 @@ class EditPatientFragment : Fragment() {
 
     private fun displayPatientData(patient: Patient) {
         binding.etName.setText(patient.name)
-        
-        // Calculate age from date_of_birth
-        val age = patient.date_of_birth?.let {
-            val parts = it.split("-")
-            val birthYear = parts[0].toInt()
-            val currentYear = java.util.Calendar.getInstance().get(java.util.Calendar.YEAR)
-            (currentYear - birthYear).toString()
-        } ?: ""
-        binding.etAge.setText(age)
+        binding.etAge.setText(patient.umur?.toString() ?: "")
         
         binding.etGender.setText(when(patient.gender) {
             "L" -> "Laki-laki"
@@ -84,12 +76,12 @@ class EditPatientFragment : Fragment() {
         }, false)
         binding.etPhone.setText(patient.phone ?: "")
         binding.etAddress.setText(patient.address ?: "")
-        binding.etDiagnosis.setText(patient.diagnosis)
+        binding.etOccupation.setText(patient.pekerjaan ?: "")
     }
 
     private fun updatePatient() {
         val name = binding.etName.text.toString()
-        val age = binding.etAge.text.toString()
+        val ageString = binding.etAge.text.toString()
         val gender = when(binding.etGender.text.toString()) {
             "Laki-laki" -> "L"
             "Perempuan" -> "P"
@@ -97,10 +89,10 @@ class EditPatientFragment : Fragment() {
         }
         val phone = binding.etPhone.text.toString()
         val address = binding.etAddress.text.toString()
-        val diagnosis = binding.etDiagnosis.text.toString()
+        val occupation = binding.etOccupation.text.toString()
 
-        if (name.isBlank() || diagnosis.isBlank()) {
-            Toast.makeText(requireContext(), "Nama dan diagnosis harus diisi", Toast.LENGTH_SHORT).show()
+        if (name.isBlank()) {
+            Toast.makeText(requireContext(), "Nama harus diisi", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -109,19 +101,12 @@ class EditPatientFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             try {
-                // Calculate date_of_birth from age if provided
-                val dateOfBirth = if (age.isNotBlank()) {
-                    val currentYear = java.util.Calendar.getInstance().get(java.util.Calendar.YEAR)
-                    val birthYear = currentYear - (age.toIntOrNull() ?: 0)
-                    "$birthYear-01-01"
-                } else currentPatient?.date_of_birth
-
                 val updatedPatient = currentPatient?.copy(
                     name = name,
-                    diagnosis = diagnosis,
+                    umur = ageString.toIntOrNull(),
+                    pekerjaan = occupation,
                     phone = phone.ifBlank { null },
                     address = address.ifBlank { null },
-                    date_of_birth = dateOfBirth,
                     gender = gender
                 )
 

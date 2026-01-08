@@ -16,7 +16,9 @@ import com.project.fisionettest.data.model.MedicalRecord
 import com.project.fisionettest.data.model.Patient
 import com.project.fisionettest.databinding.FragmentPatientDetailBinding
 import io.github.jan.supabase.postgrest.from
+import io.github.jan.supabase.postgrest.query.Order
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
 import java.util.Calendar
 
 class PatientDetailFragment : Fragment() {
@@ -24,6 +26,7 @@ class PatientDetailFragment : Fragment() {
     private val binding get() = _binding!!
     private var patientId: Int = 0
     private lateinit var medicalRecordAdapter: MedicalRecordAdapter
+
     private var currentPatient: Patient? = null
 
     override fun onCreateView(
@@ -65,7 +68,13 @@ class PatientDetailFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        medicalRecordAdapter = MedicalRecordAdapter()
+        medicalRecordAdapter = MedicalRecordAdapter { record ->
+            val json = Json.encodeToString(MedicalRecord.serializer(), record)
+            val bundle = Bundle().apply {
+                putString("medicalRecord", json)
+            }
+            findNavController().navigate(R.id.action_patient_detail_to_medical_record_detail, bundle)
+        }
         binding.rvMedicalRecords.apply {
             adapter = medicalRecordAdapter
             layoutManager = LinearLayoutManager(requireContext())
@@ -90,6 +99,7 @@ class PatientDetailFragment : Fragment() {
 
                 medicalRecordAdapter.submitList(records)
                 binding.tvEmptyRecords.visibility = if (records.isEmpty()) View.VISIBLE else View.GONE
+                
             } catch (e: Exception) {
                 Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_SHORT).show()
             }
@@ -98,10 +108,7 @@ class PatientDetailFragment : Fragment() {
 
     private fun displayPatientInfo(patient: Patient) {
         binding.tvPatientName.text = "Nama: ${patient.name}"
-        
-        // Calculate age from date_of_birth if available
-        val age = patient.date_of_birth?.let { calculateAge(it) } ?: "N/A"
-        binding.tvPatientAge.text = "Umur: $age tahun"
+        binding.tvPatientAge.text = "Umur: ${patient.umur ?: "-"} tahun"
         
         binding.tvPatientGender.text = "Jenis Kelamin: ${when(patient.gender) {
             "L" -> "Laki-laki"
@@ -110,18 +117,7 @@ class PatientDetailFragment : Fragment() {
         }}"
         binding.tvPatientPhone.text = "Telepon: ${patient.phone ?: "-"}"
         binding.tvPatientAddress.text = "Alamat: ${patient.address ?: "-"}"
-        binding.tvPatientDiagnosis.text = "Diagnosis: ${patient.diagnosis}"
-    }
-
-    private fun calculateAge(dateOfBirth: String): Int {
-        return try {
-            val parts = dateOfBirth.split("-")
-            val birthYear = parts[0].toInt()
-            val currentYear = Calendar.getInstance().get(Calendar.YEAR)
-            currentYear - birthYear
-        } catch (e: Exception) {
-            0
-        }
+        binding.tvPatientOccupation.text = "Pekerjaan: ${patient.pekerjaan ?: "-"}"
     }
 
     private fun showDeleteConfirmation() {
@@ -138,12 +134,17 @@ class PatientDetailFragment : Fragment() {
     private fun deletePatient() {
         lifecycleScope.launch {
             try {
-                // Delete medical records first
+                // Delete medical records
                 SupabaseClient.client.from("medical_records").delete {
                     filter { eq("patient_id", patientId) }
                 }
                 
-                // Then delete patient
+                // Delete patient progress
+                SupabaseClient.client.from("patient_progress").delete {
+                    filter { eq("patient_id", patientId) }
+                }
+                
+                // Delete patient
                 SupabaseClient.client.from("patients").delete {
                     filter { eq("id", patientId) }
                 }
@@ -158,7 +159,7 @@ class PatientDetailFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        loadPatientData() // Refresh when returning from edit
+        loadPatientData()
     }
 
     override fun onDestroyView() {

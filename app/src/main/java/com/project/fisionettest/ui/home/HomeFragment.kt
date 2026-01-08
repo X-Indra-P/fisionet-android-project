@@ -41,7 +41,7 @@ class HomeFragment : Fragment() {
             findNavController().navigate(R.id.action_home_to_add_patient)
         }
 
-        binding.etSearch.addTextChangedListener {
+        binding.etPatientSearch.addTextChangedListener {
             filterPatients(it.toString())
         }
     }
@@ -84,7 +84,7 @@ class HomeFragment : Fragment() {
         } else {
             allPatients.filter { patient ->
                 patient.name.contains(query, ignoreCase = true) ||
-                patient.diagnosis.contains(query, ignoreCase = true) ||
+                patient.pekerjaan?.contains(query, ignoreCase = true) == true ||
                 patient.phone?.contains(query, ignoreCase = true) == true
             }
         }

@@ -47,6 +47,7 @@
                 android:inputType="number" />
         </com.google.android.material.textfield.TextInputLayout>
 
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/til_gender"
             android:layout_width="match_parent"
@@ -92,18 +93,17 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/til_diagnosis"
+            android:id="@+id/til_occupation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Diagnosis"
+            android:hint="Pekerjaan"
             android:layout_marginBottom="24dp">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/et_diagnosis"
+                android:id="@+id/et_occupation"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textMultiLine"
-                android:minLines="3" />
+                android:inputType="text" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.button.MaterialButton

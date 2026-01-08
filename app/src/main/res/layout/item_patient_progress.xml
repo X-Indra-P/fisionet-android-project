@@ -4,36 +4,31 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    app:cardElevation="4dp"
+    app:cardElevation="2dp"
     app:cardCornerRadius="8dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="12dp">
 
         <TextView
-            android:id="@+id/tv_date"
+            android:id="@+id/tv_progress_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Tanggal: -"
+            android:text="Tanggal"
             android:textStyle="bold"
-            android:layout_marginBottom="8dp" />
-
-        <TextView
-            android:id="@+id/tv_diagnosis"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Diagnosis: -"
+            android:textColor="@android:color/darker_gray"
+            android:textSize="12sp"
             android:layout_marginBottom="4dp" />
 
         <TextView
-            android:id="@+id/tv_vital_sign"
-            android:layout_width="wrap_content"
+            android:id="@+id/tv_progress_note"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Vital Sign: -"
-            android:layout_marginBottom="4dp" />
+            android:text="Catatan Perkembangan"
+            android:textSize="14sp" />
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>

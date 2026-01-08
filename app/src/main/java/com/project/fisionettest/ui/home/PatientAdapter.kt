@@ -32,22 +32,9 @@ class PatientAdapter(
 
         fun bind(patient: Patient) {
             binding.tvPatientName.text = patient.name
-            
-            // Calculate age from date_of_birth if available
-            val age = patient.date_of_birth?.let { dob ->
-                try {
-                    val parts = dob.split("-")
-                    val birthYear = parts[0].toInt()
-                    val currentYear = java.util.Calendar.getInstance().get(java.util.Calendar.YEAR)
-                    currentYear - birthYear
-                } catch (e: Exception) {
-                    0
-                }
-            } ?: 0
-            
-            binding.tvPatientAge.text = "Umur: $age tahun"
+            binding.tvPatientAge.text = "Umur: ${patient.umur ?: 0} tahun"
             binding.tvPatientPhone.text = "Telepon: ${patient.phone ?: "-"}"
-            binding.tvPatientDiagnosis.text = "Diagnosis: ${patient.diagnosis}"
+            binding.tvPatientOccupation.text = "Pekerjaan: ${patient.pekerjaan ?: "-"}"
 
             binding.root.setOnClickListener {
                 onItemClick(patient)

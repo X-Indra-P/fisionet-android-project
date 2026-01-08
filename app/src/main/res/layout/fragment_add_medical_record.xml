@@ -49,14 +49,14 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/til_treatment"
+            android:id="@+id/til_vital_sign"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Perawatan"
+            android:hint="Vital Sign"
             android:layout_marginBottom="16dp">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/et_treatment"
+                android:id="@+id/et_vital_sign"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textMultiLine"
@@ -64,14 +64,44 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/til_notes"
+            android:id="@+id/til_patient_problem"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Catatan"
+            android:hint="Patient Problem"
+            android:layout_marginBottom="16dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_patient_problem"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textMultiLine"
+                android:minLines="3" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_inspection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Inspection"
+            android:layout_marginBottom="16dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_inspection"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textMultiLine"
+                android:minLines="3" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_planning"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Planning"
             android:layout_marginBottom="24dp">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/et_notes"
+                android:id="@+id/et_planning"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textMultiLine"

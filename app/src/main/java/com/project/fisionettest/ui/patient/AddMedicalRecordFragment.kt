@@ -66,11 +66,13 @@ class AddMedicalRecordFragment : Fragment() {
 
     private fun saveMedicalRecord() {
         val diagnosis = binding.etDiagnosis.text.toString()
-        val treatment = binding.etTreatment.text.toString()
-        val notes = binding.etNotes.text.toString()
+        val vitalSign = binding.etVitalSign.text.toString()
+        val patientProblem = binding.etPatientProblem.text.toString()
+        val inspection = binding.etInspection.text.toString()
+        val planning = binding.etPlanning.text.toString()
 
-        if (diagnosis.isBlank() || treatment.isBlank()) {
-            Toast.makeText(requireContext(), "Diagnosis dan perawatan harus diisi", Toast.LENGTH_SHORT).show()
+        if (diagnosis.isBlank()) {
+            Toast.makeText(requireContext(), "Diagnosis harus diisi", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -83,8 +85,10 @@ class AddMedicalRecordFragment : Fragment() {
                     patient_id = patientId,
                     date = selectedDate,
                     diagnosis = diagnosis,
-                    treatment = treatment,
-                    notes = notes.ifBlank { null }
+                    vital_sign = vitalSign,
+                    patient_problem = patientProblem,
+                    inspection = inspection,
+                    planning = planning
                 )
 
                 SupabaseClient.client.from("medical_records").insert(newRecord)

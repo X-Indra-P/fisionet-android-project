@@ -47,7 +47,7 @@ class AddPatientFragment : Fragment() {
 
     private fun savePatient() {
         val name = binding.etName.text.toString()
-        val age = binding.etAge.text.toString()
+        val ageString = binding.etAge.text.toString()
         val gender = when(binding.etGender.text.toString()) {
             "Laki-laki" -> "L"
             "Perempuan" -> "P"
@@ -55,10 +55,10 @@ class AddPatientFragment : Fragment() {
         }
         val phone = binding.etPhone.text.toString()
         val address = binding.etAddress.text.toString()
-        val diagnosis = binding.etDiagnosis.text.toString()
+        val occupation = binding.etOccupation.text.toString()
 
-        if (name.isBlank() || diagnosis.isBlank()) {
-            Toast.makeText(requireContext(), "Nama dan diagnosis harus diisi", Toast.LENGTH_SHORT).show()
+        if (name.isBlank()) {
+            Toast.makeText(requireContext(), "Nama harus diisi", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -73,20 +73,13 @@ class AddPatientFragment : Fragment() {
                     return@launch
                 }
 
-                // Calculate date_of_birth from age if provided
-                val dateOfBirth = if (age.isNotBlank()) {
-                    val currentYear = java.util.Calendar.getInstance().get(java.util.Calendar.YEAR)
-                    val birthYear = currentYear - (age.toIntOrNull() ?: 0)
-                    "$birthYear-01-01"
-                } else null
-
                 val newPatient = Patient(
                     name = name,
-                    diagnosis = diagnosis,
+                    umur = ageString.toIntOrNull(),
+                    pekerjaan = occupation,
                     therapist_id = user.id,
                     phone = phone.ifBlank { null },
                     address = address.ifBlank { null },
-                    date_of_birth = dateOfBirth,
                     gender = gender
                 )
 

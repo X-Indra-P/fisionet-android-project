@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
     app:startDestination="@id/loginFragment">
 
@@ -77,7 +78,8 @@
     <fragment
         android:id="@+id/patientDetailFragment"
         android:name="com.project.fisionettest.ui.patient.PatientDetailFragment"
-        android:label="Detail Pasien">
+        android:label="fragment_patient_detail"
+        tools:layout="@layout/fragment_patient_detail">
         <argument
             android:name="patientId"
             app:argType="integer" />
@@ -87,6 +89,19 @@
         <action
             android:id="@+id/action_patient_detail_to_add_medical_record"
             app:destination="@id/addMedicalRecordFragment" />
+        <action
+            android:id="@+id/action_patient_detail_to_medical_record_detail"
+            app:destination="@id/medicalRecordDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/medicalRecordDetailFragment"
+        android:name="com.project.fisionettest.ui.patient.MedicalRecordDetailFragment"
+        android:label="fragment_medical_record_detail"
+        tools:layout="@layout/fragment_medical_record_detail">
+        <argument
+            android:name="medicalRecord"
+            app:argType="string" />
     </fragment>
 
     <fragment
