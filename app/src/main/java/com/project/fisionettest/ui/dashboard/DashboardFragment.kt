@@ -61,6 +61,10 @@ class DashboardFragment : Fragment() {
         binding.btnViewPatientsCard.setOnClickListener {
             findNavController().navigate(R.id.action_dashboard_to_patients)
         }
+
+        binding.btnCashierMode.setOnClickListener {
+            findNavController().navigate(R.id.action_dashboard_to_cashier)
+        }
     }
 
     private fun loadStatistics() {

@@ -45,6 +45,9 @@
         <action
             android:id="@+id/action_dashboard_to_patients"
             app:destination="@id/homeFragment" />
+        <action
+            android:id="@+id/action_dashboard_to_cashier"
+            app:destination="@id/cashierFragment" />
     </fragment>
 
     <fragment
@@ -126,5 +129,19 @@
             android:name="patientId"
             app:argType="integer" />
     </fragment>
+
+    <fragment
+        android:id="@+id/cashierFragment"
+        android:name="com.project.fisionettest.ui.cashier.CashierFragment"
+        android:label="Cashier Mode">
+        <action
+            android:id="@+id/action_cashier_to_history"
+            app:destination="@id/transactionHistoryFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/transactionHistoryFragment"
+        android:name="com.project.fisionettest.ui.cashier.TransactionHistoryFragment"
+        android:label="Riwayat Transaksi" />
 
 </navigation>
