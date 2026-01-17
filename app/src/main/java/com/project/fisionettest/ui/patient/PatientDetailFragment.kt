@@ -12,7 +12,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.project.fisionettest.R
 import com.project.fisionettest.data.SupabaseClient
-import com.project.fisionettest.data.model.MedicalRecord
 import com.project.fisionettest.data.model.Patient
 import com.project.fisionettest.databinding.FragmentPatientDetailBinding
 import io.github.jan.supabase.postgrest.from
@@ -25,7 +24,7 @@ class PatientDetailFragment : Fragment() {
     private var _binding: FragmentPatientDetailBinding? = null
     private val binding get() = _binding!!
     private var patientId: Int = 0
-    private lateinit var medicalRecordAdapter: MedicalRecordAdapter
+    private lateinit var diagnosisAdapter: DiagnosisAdapter
 
     private var currentPatient: Patient? = null
 
@@ -63,20 +62,20 @@ class PatientDetailFragment : Fragment() {
             val bundle = Bundle().apply {
                 putInt("patientId", patientId)
             }
-            findNavController().navigate(R.id.action_patient_detail_to_add_medical_record, bundle)
+            findNavController().navigate(R.id.action_patient_detail_to_add_diagnosis, bundle)
         }
     }
 
     private fun setupRecyclerView() {
-        medicalRecordAdapter = MedicalRecordAdapter { record ->
-            val json = Json.encodeToString(MedicalRecord.serializer(), record)
+        diagnosisAdapter = DiagnosisAdapter { record ->
+            val json = Json.encodeToString(com.project.fisionettest.data.model.Diagnosis.serializer(), record)
             val bundle = Bundle().apply {
-                putString("medicalRecord", json)
+                putString("diagnosis", json)
             }
-            findNavController().navigate(R.id.action_patient_detail_to_medical_record_detail, bundle)
+            findNavController().navigate(R.id.action_patient_detail_to_diagnosis_detail, bundle)
         }
         binding.rvMedicalRecords.apply {
-            adapter = medicalRecordAdapter
+            adapter = diagnosisAdapter
             layoutManager = LinearLayoutManager(requireContext())
         }
     }
@@ -92,12 +91,12 @@ class PatientDetailFragment : Fragment() {
                 currentPatient = patient
                 displayPatientInfo(patient)
 
-                // Load medical records
-                val records = SupabaseClient.client.from("medical_records").select {
+                // Load medical records (now diagnosis)
+                val records = SupabaseClient.client.from("diagnosis").select {
                     filter { eq("patient_id", patientId) }
-                }.decodeList<MedicalRecord>()
+                }.decodeList<com.project.fisionettest.data.model.Diagnosis>()
 
-                medicalRecordAdapter.submitList(records)
+                diagnosisAdapter.submitList(records)
                 binding.tvEmptyRecords.visibility = if (records.isEmpty()) View.VISIBLE else View.GONE
                 
             } catch (e: Exception) {
@@ -134,13 +133,23 @@ class PatientDetailFragment : Fragment() {
     private fun deletePatient() {
         lifecycleScope.launch {
             try {
-                // Delete medical records
-                SupabaseClient.client.from("medical_records").delete {
+                // Delete references in appointments
+                SupabaseClient.client.from("appointments").delete {
+                     filter { eq("patient_id", patientId) }
+                }
+
+                // Delete medical records (diagnosis)
+                SupabaseClient.client.from("diagnosis").delete {
                     filter { eq("patient_id", patientId) }
                 }
                 
                 // Delete patient progress
                 SupabaseClient.client.from("patient_progress").delete {
+                    filter { eq("patient_id", patientId) }
+                }
+
+                // Delete transactions
+                SupabaseClient.client.from("transactions").delete {
                     filter { eq("patient_id", patientId) }
                 }
                 

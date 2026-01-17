@@ -10,7 +10,6 @@ import androidx.navigation.fragment.findNavController
 import com.project.fisionettest.R
 import com.project.fisionettest.data.SupabaseClient
 import com.project.fisionettest.data.model.Appointment
-import com.project.fisionettest.data.model.MedicalRecord
 import com.project.fisionettest.data.model.Patient
 import com.project.fisionettest.databinding.FragmentDashboardBinding
 import io.github.jan.supabase.gotrue.auth
@@ -75,7 +74,8 @@ class DashboardFragment : Fragment() {
                 binding.tvTotalPatients.text = patients.size.toString()
 
                 // Load medical records for statistics
-                val records = SupabaseClient.client.from("medical_records").select().decodeList<MedicalRecord>()
+                // Load medical records for statistics (now diagnosis)
+                val records = SupabaseClient.client.from("diagnosis").select().decodeList<com.project.fisionettest.data.model.Diagnosis>()
                 val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
                 val today = dateFormat.format(Date())
                 val currentMonth = today.substring(0, 7) // "yyyy-MM"

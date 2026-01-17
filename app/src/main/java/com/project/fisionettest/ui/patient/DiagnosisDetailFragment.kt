@@ -12,28 +12,28 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.project.fisionettest.R
 import com.project.fisionettest.data.SupabaseClient
-import com.project.fisionettest.data.model.MedicalRecord
-import com.project.fisionettest.databinding.FragmentMedicalRecordDetailBinding
+import com.project.fisionettest.data.model.Diagnosis
+import com.project.fisionettest.databinding.FragmentDiagnosisDetailBinding
 import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.postgrest.query.Order
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import java.util.Calendar
 
-class MedicalRecordDetailFragment : Fragment() {
+class DiagnosisDetailFragment : Fragment() {
 
-    private var _binding: FragmentMedicalRecordDetailBinding? = null
+    private var _binding: FragmentDiagnosisDetailBinding? = null
     private val binding get() = _binding!!
     private lateinit var progressAdapter: PatientProgressAdapter
     private var patientId: Int = 0
-    private var currentRecord: MedicalRecord? = null
+    private var currentRecord: Diagnosis? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentMedicalRecordDetailBinding.inflate(inflater, container, false)
+        _binding = FragmentDiagnosisDetailBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -42,9 +42,9 @@ class MedicalRecordDetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val recordJson = arguments?.getString("medicalRecord")
+        val recordJson = arguments?.getString("diagnosis")
         if (recordJson != null) {
-            val record = Json.decodeFromString(MedicalRecord.serializer(), recordJson)
+            val record = Json.decodeFromString(com.project.fisionettest.data.model.Diagnosis.serializer(), recordJson)
             currentRecord = record
             displayRecord(record)
             patientId = record.patient_id
@@ -70,18 +70,18 @@ class MedicalRecordDetailFragment : Fragment() {
         }
     }
 
-    private fun displayRecord(record: MedicalRecord) {
+    private fun displayRecord(record: com.project.fisionettest.data.model.Diagnosis) {
         binding.tvDetailDate.text = "Tanggal: ${record.date}"
         
         // Read Mode (TextViews)
-        binding.tvReadDiagnosis.text = record.diagnosis
+        binding.tvReadDiagnosis.text = record.diagnosa
         binding.tvReadVitalSign.text = record.vital_sign
         binding.tvReadPatientProblem.text = record.patient_problem
         binding.tvReadInspection.text = record.inspection
         binding.tvReadPlanning.text = record.planning
 
         // Edit Mode (EditTexts)
-        binding.etDetailDiagnosis.setText(record.diagnosis)
+        binding.etDetailDiagnosis.setText(record.diagnosa)
         binding.etDetailVitalSign.setText(record.vital_sign)
         binding.etDetailPatientProblem.setText(record.patient_problem)
         binding.etDetailInspection.setText(record.inspection)
@@ -115,7 +115,7 @@ class MedicalRecordDetailFragment : Fragment() {
         lifecycleScope.launch {
             try {
                 val updatedRecord = currentRecord?.copy(
-                    diagnosis = binding.etDetailDiagnosis.text.toString(),
+                    diagnosa = binding.etDetailDiagnosis.text.toString(), // Updated field name
                     vital_sign = binding.etDetailVitalSign.text.toString(),
                     patient_problem = binding.etDetailPatientProblem.text.toString(),
                     inspection = binding.etDetailInspection.text.toString(),
@@ -123,7 +123,7 @@ class MedicalRecordDetailFragment : Fragment() {
                 )
 
                 if (updatedRecord != null) {
-                    SupabaseClient.client.from("medical_records").update(updatedRecord) {
+                    SupabaseClient.client.from("diagnosis").update(updatedRecord) { // Table name changed
                         filter { eq("id", updatedRecord.id ?: -1) }
                     }
                     Toast.makeText(requireContext(), "Perubahan berhasil disimpan", Toast.LENGTH_SHORT).show()
@@ -157,7 +157,7 @@ class MedicalRecordDetailFragment : Fragment() {
         lifecycleScope.launch {
             try {
                 currentRecord?.id?.let { recordId ->
-                    SupabaseClient.client.from("medical_records").delete {
+                    SupabaseClient.client.from("diagnosis").delete { // Table name changed
                         filter { eq("id", recordId) }
                     }
                     Toast.makeText(requireContext(), "Diagnosis berhasil dihapus", Toast.LENGTH_SHORT).show()

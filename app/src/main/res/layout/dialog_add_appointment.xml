@@ -18,19 +18,18 @@
             android:textStyle="bold"
             android:layout_marginBottom="16dp" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/til_patient"
-            android:layout_width="match_parent"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="Nama Pasien"
-            android:layout_marginBottom="16dp">
+            android:text="Nama Pasien"
+            android:layout_marginBottom="8dp" />
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/et_patient"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textPersonName" />
-        </com.google.android.material.textfield.TextInputLayout>
+        <Spinner
+            android:id="@+id/spinner_patient"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/bg_rounded_border" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/til_date"

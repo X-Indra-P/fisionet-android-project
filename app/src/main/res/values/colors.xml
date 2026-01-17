@@ -9,6 +9,10 @@
     <color name="text_primary">#212121</color>
     <color name="text_secondary">#757575</color>
     <color name="error_red">#D32F2F</color>
+    
+    <color name="status_waiting">#FBC02D</color> <!-- Yellow -->
+    <color name="status_present">#388E3C</color> <!-- Green -->
+    <color name="status_absent">#D32F2F</color> <!-- Red -->
 
     <!-- Keeping legacy names mapped to new colors for compatibility -->
     <color name="purple_200">#90CAF9</color> <!-- Light Blue -->

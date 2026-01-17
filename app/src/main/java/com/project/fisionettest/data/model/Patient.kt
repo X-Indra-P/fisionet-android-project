@@ -14,5 +14,7 @@ data class Patient(
     val address: String? = null,
     val gender: String? = null, // "L" or "P"
     val notes: String? = null,
+    @kotlinx.serialization.ExperimentalSerializationApi
+    @kotlinx.serialization.EncodeDefault
     val status: String = "Aktif" // "Aktif", "Selesai", "Tidak Aktif"
 )
