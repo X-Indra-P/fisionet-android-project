@@ -90,20 +90,20 @@
             android:id="@+id/action_patient_detail_to_edit"
             app:destination="@id/editPatientFragment" />
         <action
-            android:id="@+id/action_patient_detail_to_add_medical_record"
-            app:destination="@id/addMedicalRecordFragment" />
+            android:id="@+id/action_patient_detail_to_add_diagnosis"
+            app:destination="@id/addDiagnosisFragment" />
         <action
-            android:id="@+id/action_patient_detail_to_medical_record_detail"
-            app:destination="@id/medicalRecordDetailFragment" />
+            android:id="@+id/action_patient_detail_to_diagnosis_detail"
+            app:destination="@id/diagnosisDetailFragment" />
     </fragment>
 
     <fragment
-        android:id="@+id/medicalRecordDetailFragment"
-        android:name="com.project.fisionettest.ui.patient.MedicalRecordDetailFragment"
-        android:label="fragment_medical_record_detail"
-        tools:layout="@layout/fragment_medical_record_detail">
+        android:id="@+id/diagnosisDetailFragment"
+        android:name="com.project.fisionettest.ui.patient.DiagnosisDetailFragment"
+        android:label="Detail Diagnosis"
+        tools:layout="@layout/fragment_diagnosis_detail">
         <argument
-            android:name="medicalRecord"
+            android:name="diagnosis"
             app:argType="string" />
     </fragment>
 
@@ -122,11 +122,12 @@
     </fragment>
 
     <fragment
-        android:id="@+id/addMedicalRecordFragment"
-        android:name="com.project.fisionettest.ui.patient.AddMedicalRecordFragment"
-        android:label="Tambah Rekam Medis">
+        android:id="@+id/addDiagnosisFragment"
+        android:name="com.project.fisionettest.ui.patient.AddDiagnosisFragment"
+        android:label="Tambah Diagnosis">
         <argument
             android:name="patientId"
+            android:defaultValue="0"
             app:argType="integer" />
     </fragment>
 

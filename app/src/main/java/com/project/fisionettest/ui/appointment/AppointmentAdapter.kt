@@ -52,6 +52,15 @@ class AppointmentAdapter : ListAdapter<Appointment, AppointmentAdapter.Appointme
                 else -> appointment.status // Fallback
             }
             binding.tvStatus.text = "Status: $uiStatus"
+
+            // Set Color
+            val colorRes = when (uiStatus) {
+                "Menunggu" -> com.project.fisionettest.R.color.status_waiting
+                "Hadir" -> com.project.fisionettest.R.color.status_present
+                "Tidak Hadir" -> com.project.fisionettest.R.color.status_absent
+                else -> com.project.fisionettest.R.color.black
+            }
+            binding.tvStatus.setTextColor(itemView.context.getColor(colorRes))
         }
     }
 

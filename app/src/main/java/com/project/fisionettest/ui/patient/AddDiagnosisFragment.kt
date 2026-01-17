@@ -11,15 +11,15 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 
 import com.project.fisionettest.data.SupabaseClient
-import com.project.fisionettest.data.model.MedicalRecord
-import com.project.fisionettest.databinding.FragmentAddMedicalRecordBinding
+import com.project.fisionettest.data.model.Diagnosis
+import com.project.fisionettest.databinding.FragmentAddDiagnosisBinding
 import io.github.jan.supabase.postgrest.from
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
-class AddMedicalRecordFragment : Fragment() {
-    private var _binding: FragmentAddMedicalRecordBinding? = null
+class AddDiagnosisFragment : Fragment() {
+    private var _binding: FragmentAddDiagnosisBinding? = null
     private val binding get() = _binding!!
     private var patientId: Int = 0
     private var selectedDate: String = ""
@@ -29,7 +29,7 @@ class AddMedicalRecordFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentAddMedicalRecordBinding.inflate(inflater, container, false)
+        _binding = FragmentAddDiagnosisBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -48,7 +48,7 @@ class AddMedicalRecordFragment : Fragment() {
         }
 
         binding.btnSave.setOnClickListener {
-            saveMedicalRecord()
+            saveDiagnosis()
         }
     }
 
@@ -64,7 +64,7 @@ class AddMedicalRecordFragment : Fragment() {
         }, year, month, day).show()
     }
 
-    private fun saveMedicalRecord() {
+    private fun saveDiagnosis() {
         val diagnosis = binding.etDiagnosis.text.toString()
         val vitalSign = binding.etVitalSign.text.toString()
         val patientProblem = binding.etPatientProblem.text.toString()
@@ -81,18 +81,18 @@ class AddMedicalRecordFragment : Fragment() {
 
         lifecycleScope.launch {
             try {
-                val newRecord = MedicalRecord(
+                val newRecord = com.project.fisionettest.data.model.Diagnosis(
                     patient_id = patientId,
                     date = selectedDate,
-                    diagnosis = diagnosis,
+                    diagnosa = diagnosis, // Updated field
                     vital_sign = vitalSign,
                     patient_problem = patientProblem,
                     inspection = inspection,
                     planning = planning
                 )
 
-                SupabaseClient.client.from("medical_records").insert(newRecord)
-                Toast.makeText(requireContext(), "Rekam medis berhasil ditambahkan", Toast.LENGTH_SHORT).show()
+                SupabaseClient.client.from("diagnosis").insert(newRecord) // Updated table name
+                Toast.makeText(requireContext(), "Diagnosis berhasil ditambahkan", Toast.LENGTH_SHORT).show()
                 findNavController().popBackStack()
             } catch (e: Exception) {
                 Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_LONG).show()

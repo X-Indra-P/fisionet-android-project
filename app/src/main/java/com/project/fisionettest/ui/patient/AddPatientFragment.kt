@@ -62,6 +62,11 @@ class AddPatientFragment : Fragment() {
             return
         }
 
+        if (gender == null) {
+            Toast.makeText(requireContext(), "Jenis kelamin harus dipilih", Toast.LENGTH_SHORT).show()
+            return
+        }
+
         binding.btnSave.isEnabled = false
         binding.progressBar.visibility = View.VISIBLE
 

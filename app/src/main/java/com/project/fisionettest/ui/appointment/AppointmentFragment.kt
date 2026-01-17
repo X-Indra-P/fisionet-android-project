@@ -33,6 +33,8 @@ class AppointmentFragment : Fragment() {
 
     private var allAppointments: List<Appointment> = emptyList()
     private var filteredDate: String? = null
+    private var patientList: List<com.project.fisionettest.data.model.Patient> = emptyList()
+    private var selectedPatient: com.project.fisionettest.data.model.Patient? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -40,9 +42,21 @@ class AppointmentFragment : Fragment() {
         setupRecyclerView()
         setupFilter()
         loadAppointments()
+        loadPatients() // Fetch patients for dropdown
 
         binding.fabAddAppointment.setOnClickListener {
             showAddAppointmentDialog()
+        }
+    }
+
+    private fun loadPatients() {
+        lifecycleScope.launch {
+            try {
+                patientList = SupabaseClient.client.from("patients").select().decodeList()
+            } catch (e: Exception) {
+                // Fail silently or log
+                e.printStackTrace()
+            }
         }
     }
 
@@ -117,6 +131,21 @@ class AppointmentFragment : Fragment() {
 
         var selectedDate: String? = null
         var selectedTime: String? = null
+        
+        // Setup Patient Spinner
+        val patientNames = patientList.map { it.name }
+        val adapter = android.widget.ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, patientNames)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        dialogBinding.spinnerPatient.adapter = adapter
+        
+        dialogBinding.spinnerPatient.onItemSelectedListener = object : android.widget.AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: android.widget.AdapterView<*>?, view: View?, position: Int, id: Long) {
+                selectedPatient = patientList.getOrNull(position)
+            }
+            override fun onNothingSelected(parent: android.widget.AdapterView<*>?) {
+                selectedPatient = null
+            }
+        }
 
         dialogBinding.etDate.setOnClickListener {
             val calendar = java.util.Calendar.getInstance()
@@ -135,10 +164,9 @@ class AppointmentFragment : Fragment() {
         }
 
         dialogBinding.btnSave.setOnClickListener {
-            val patientName = dialogBinding.etPatient.text.toString()
             val notes = dialogBinding.etNotes.text.toString()
 
-            if (patientName.isNotBlank() && selectedDate != null && selectedTime != null) {
+            if (selectedPatient != null && selectedDate != null && selectedTime != null) {
                 lifecycleScope.launch {
                     try {
                         val authUser = SupabaseClient.client.auth.currentSessionOrNull()?.user
@@ -147,8 +175,8 @@ class AppointmentFragment : Fragment() {
                         val dbStatus = "Terjadwal"
 
                         val newAppointment = Appointment(
-                            patient_id = null,
-                            patient_name = patientName,
+                            patient_id = selectedPatient?.id,
+                            patient_name = selectedPatient!!.name,
                             therapist_id = therapistId,
                             date = selectedDate!!,
                             time = selectedTime!!,
@@ -168,7 +196,7 @@ class AppointmentFragment : Fragment() {
                     }
                 }
             } else {
-                android.widget.Toast.makeText(requireContext(), "Mohon lengkapi data", android.widget.Toast.LENGTH_SHORT).show()
+                android.widget.Toast.makeText(requireContext(), "Mohon pilih pasien dan lengkapi data", android.widget.Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -180,11 +208,12 @@ class AppointmentFragment : Fragment() {
     }
 
     private fun showStatusDialog(appointment: Appointment) {
-        val options = arrayOf("Menunggu", "Hadir", "Tidak Hadir", "Hapus")
+        val options = arrayOf("Edit", "Menunggu", "Hadir", "Tidak Hadir", "Hapus")
         MaterialAlertDialogBuilder(requireContext())
             .setTitle("Opsi Appointment")
             .setItems(options) { _, which ->
                 when (val selectedUiStatus = options[which]) {
+                    "Edit" -> showEditAppointmentDialog(appointment)
                     "Hapus" -> confirmDelete(appointment)
                     else -> {
                         val dbStatus = when (selectedUiStatus) {
@@ -198,6 +227,100 @@ class AppointmentFragment : Fragment() {
                 }
             }
             .show()
+    }
+    
+    private fun showEditAppointmentDialog(appointment: Appointment) {
+        val dialogBinding = com.project.fisionettest.databinding.DialogAddAppointmentBinding.inflate(layoutInflater)
+        val dialog = MaterialAlertDialogBuilder(requireContext())
+            .setView(dialogBinding.root)
+            .create()
+
+        // Hide Add Title, maybe change to "Edit Appointment" if TextView id was accessible/dynamic, 
+        // but current layout has hardcoded text. We can ignore or code defensively if we had the ID.
+        // Assuming the ID isn't exposed or simply relying on context.
+
+        var selectedDate: String? = appointment.date
+        var selectedTime: String? = appointment.time
+        
+        // Setup Patient Spinner
+        val patientNames = patientList.map { it.name }
+        val adapter = android.widget.ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, patientNames)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        dialogBinding.spinnerPatient.adapter = adapter
+        
+        // Determine selected patient index
+        val currentPatientIndex = patientList.indexOfFirst { it.name == appointment.patient_name }
+        if (currentPatientIndex != -1) {
+            dialogBinding.spinnerPatient.setSelection(currentPatientIndex)
+            selectedPatient = patientList[currentPatientIndex]
+        }
+        
+        dialogBinding.spinnerPatient.onItemSelectedListener = object : android.widget.AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: android.widget.AdapterView<*>?, view: View?, position: Int, id: Long) {
+                selectedPatient = patientList.getOrNull(position)
+            }
+            override fun onNothingSelected(parent: android.widget.AdapterView<*>?) {
+                // Keep previous selection if possible or null
+            }
+        }
+
+        // Fill existing data
+        dialogBinding.etDate.setText(appointment.date)
+        dialogBinding.etTime.setText(appointment.time.substring(0, 5)) // HH:mm
+        dialogBinding.etNotes.setText(appointment.notes ?: "")
+
+        dialogBinding.etDate.setOnClickListener {
+            val calendar = java.util.Calendar.getInstance()
+            // Parse existing date if needed, or just use current
+            android.app.DatePickerDialog(requireContext(), { _, year, month, day ->
+                selectedDate = String.format("%04d-%02d-%02d", year, month + 1, day)
+                dialogBinding.etDate.setText(selectedDate)
+            }, calendar.get(java.util.Calendar.YEAR), calendar.get(java.util.Calendar.MONTH), calendar.get(java.util.Calendar.DAY_OF_MONTH)).show()
+        }
+
+        dialogBinding.etTime.setOnClickListener {
+            val calendar = java.util.Calendar.getInstance()
+            android.app.TimePickerDialog(requireContext(), { _, hour, minute ->
+                selectedTime = String.format("%02d:%02d:00", hour, minute)
+                dialogBinding.etTime.setText(String.format("%02d:%02d", hour, minute))
+            }, calendar.get(java.util.Calendar.HOUR_OF_DAY), calendar.get(java.util.Calendar.MINUTE), true).show()
+        }
+
+        dialogBinding.btnSave.setOnClickListener {
+            val notes = dialogBinding.etNotes.text.toString()
+
+            if (selectedPatient != null && selectedDate != null && selectedTime != null) {
+                lifecycleScope.launch {
+                    try {
+                        val updatedAppointment = appointment.copy(
+                            patient_id = selectedPatient?.id,
+                            patient_name = selectedPatient!!.name,
+                            date = selectedDate!!,
+                            time = selectedTime!!,
+                            notes = if (notes.isBlank()) null else notes
+                        )
+
+                        SupabaseClient.client.from("appointments").update(updatedAppointment) {
+                            filter { eq("id", appointment.id!!) }
+                        }
+                        
+                        loadAppointments()
+                        dialog.dismiss()
+                        android.widget.Toast.makeText(requireContext(), "Appointment diperbarui", android.widget.Toast.LENGTH_SHORT).show()
+                    } catch (e: Exception) {
+                        android.widget.Toast.makeText(requireContext(), "Gagal Update: ${e.message}", android.widget.Toast.LENGTH_SHORT).show()
+                    }
+                }
+            } else {
+                android.widget.Toast.makeText(requireContext(), "Semua data harus diisi", android.widget.Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        dialogBinding.btnCancel.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
     }
 
     private fun confirmDelete(appointment: Appointment) {
