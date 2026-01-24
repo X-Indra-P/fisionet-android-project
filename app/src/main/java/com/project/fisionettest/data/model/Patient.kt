@@ -9,7 +9,6 @@ data class Patient(
     val name: String,
     val umur: Int? = null,
     val pekerjaan: String? = null,
-    val therapist_id: String,
     val phone: String? = null,
     val address: String? = null,
     val gender: String? = null, // "L" or "P"

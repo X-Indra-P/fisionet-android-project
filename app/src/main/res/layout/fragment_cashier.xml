@@ -15,10 +15,19 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Cashier Mode"
+            android:text="Tambah Transaksi"
             android:textSize="24sp"
             android:textStyle="bold"
             android:textColor="@color/black"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:id="@+id/tv_therapist_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Terapis: -"
+            android:textSize="16sp"
+            android:textColor="@color/text_secondary"
             android:layout_marginBottom="24dp" />
 
         <!-- Date Selection -->
@@ -67,14 +76,7 @@
                 android:text="Pilih Paket"
                 android:textColor="@color/black"/>
 
-             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_create_package"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Buat Paket Baru"
-                app:icon="@android:drawable/ic_input_add"
-                style="@style/Widget.MaterialComponents.Button.TextButton"
-                android:textColor="@color/primary_blue"/>
+
         </LinearLayout>
 
         <Spinner
@@ -144,16 +146,7 @@
             app:cornerRadius="8dp"
             android:backgroundTint="@color/primary_blue"/>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_view_history"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Lihat Riwayat Transaksi"
-            android:padding="12dp"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            app:strokeColor="@color/primary_blue"
-            android:textColor="@color/primary_blue"
-            app:cornerRadius="8dp"/>
+
 
         <ProgressBar
             android:id="@+id/loading_bar"

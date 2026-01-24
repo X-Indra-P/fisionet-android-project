@@ -15,6 +15,8 @@ import com.project.fisionettest.data.model.Diagnosis
 import com.project.fisionettest.databinding.FragmentAddDiagnosisBinding
 import io.github.jan.supabase.postgrest.from
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -81,15 +83,16 @@ class AddDiagnosisFragment : Fragment() {
 
         lifecycleScope.launch {
             try {
-                val newRecord = com.project.fisionettest.data.model.Diagnosis(
-                    patient_id = patientId,
-                    date = selectedDate,
-                    diagnosa = diagnosis, // Updated field
-                    vital_sign = vitalSign,
-                    patient_problem = patientProblem,
-                    inspection = inspection,
-                    planning = planning
-                )
+                // Use JsonObject to avoid sending null 'id' and 'created_at' and to be safe
+                val newRecord = kotlinx.serialization.json.buildJsonObject {
+                    put("patient_id", patientId)
+                    put("date", selectedDate)
+                    put("diagnosa", diagnosis)
+                    put("vital_sign", vitalSign)
+                    put("patient_problem", patientProblem)
+                    put("inspection", inspection)
+                    put("planning", planning)
+                }
 
                 SupabaseClient.client.from("diagnosis").insert(newRecord) // Updated table name
                 Toast.makeText(requireContext(), "Diagnosis berhasil ditambahkan", Toast.LENGTH_SHORT).show()

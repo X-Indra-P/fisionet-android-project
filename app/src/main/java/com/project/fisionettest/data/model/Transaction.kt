@@ -11,5 +11,7 @@ data class Transaction(
     val package_id: Long?,
     val package_name: String,
     val amount: Double,
+    val user_id: String? = null,
+    val user_name: String? = null,
     val created_at: String? = null
 )

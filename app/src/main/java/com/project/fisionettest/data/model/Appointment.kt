@@ -8,7 +8,6 @@ data class Appointment(
     val created_at: String? = null,
     val patient_id: Int? = null, // Nullable for standalone appointments
     val patient_name: String? = null, // Required for standalone (nullable for backward compatibility)
-    val therapist_id: String? = null,
     val date: String, // YYYY-MM-DD
     val time: String, // HH:MM
     val status: String = "Terjadwal", // "Terjadwal", "Selesai", "Dibatalkan"

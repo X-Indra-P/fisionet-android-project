@@ -18,7 +18,10 @@ import com.project.fisionettest.databinding.DialogAddPackageBinding
 import io.github.jan.supabase.postgrest.from
 import kotlinx.coroutines.launch
 
-class AddPackageDialog(private val onPackageAdded: () -> Unit) : DialogFragment() {
+class AddPackageDialog(
+    private val packageToEdit: Package? = null,
+    private val onPackageSaved: () -> Unit
+) : DialogFragment() {
 
     private var _binding: DialogAddPackageBinding? = null
     private val binding get() = _binding!!
@@ -41,6 +44,20 @@ class AddPackageDialog(private val onPackageAdded: () -> Unit) : DialogFragment(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Pre-fill data if editing
+        if (packageToEdit != null) {
+            binding.etPackageName.setText(packageToEdit.name)
+            binding.etPackagePrice.setText(packageToEdit.price.toLong().toString()) // Display as integer/string for editing
+            binding.tvTitle.text = "Edit Paket" // Assuming there is a title TextView, or update via binding if ID known. 
+            // If checking layout file, let's assume specific ID isn't critical or we can just change button text
+            binding.btnSavePackage.text = "Simpan Perubahan"
+            
+            // Populate tools
+            packageToEdit.tools.forEach { toolName ->
+                addToolInput(toolName)
+            }
+        }
+
         binding.btnAddTool.setOnClickListener {
             addToolInput()
         }
@@ -54,9 +71,13 @@ class AddPackageDialog(private val onPackageAdded: () -> Unit) : DialogFragment(
         }
     }
 
-    private fun addToolInput() {
+    private fun addToolInput(existingName: String = "") {
         val toolView = LayoutInflater.from(requireContext()).inflate(R.layout.item_tool_input, binding.containerTools, false)
         val btnRemove = toolView.findViewById<ImageButton>(R.id.btn_remove_tool)
+        val etTool = toolView.findViewById<EditText>(R.id.et_tool_name)
+        
+        etTool.setText(existingName)
+
         btnRemove.setOnClickListener {
             binding.containerTools.removeView(toolView)
         }
@@ -90,14 +111,29 @@ class AddPackageDialog(private val onPackageAdded: () -> Unit) : DialogFragment(
 
         lifecycleScope.launch {
             try {
-                val newPackage = Package(
-                    name = name,
-                    price = price,
-                    tools = tools
-                )
-                SupabaseClient.client.from("packages").insert(newPackage)
-                Toast.makeText(requireContext(), "Paket berhasil dibuat", Toast.LENGTH_SHORT).show()
-                onPackageAdded()
+                if (packageToEdit == null) {
+                    val newPackage = Package(
+                        name = name,
+                        price = price,
+                        tools = tools
+                    )
+                    SupabaseClient.client.from("packages").insert(newPackage)
+                    Toast.makeText(requireContext(), "Paket berhasil dibuat", Toast.LENGTH_SHORT).show()
+                } else {
+                     val updatedPackage = packageToEdit.copy(
+                        name = name,
+                        price = price,
+                        tools = tools
+                    )
+                     SupabaseClient.client.from("packages").update(updatedPackage) {
+                         filter {
+                             eq("id", packageToEdit.id!!)
+                         }
+                     }
+                     Toast.makeText(requireContext(), "Paket berhasil diperbarui", Toast.LENGTH_SHORT).show()
+                }
+               
+                onPackageSaved()
                 dismiss()
             } catch (e: Exception) {
                 Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_LONG).show()

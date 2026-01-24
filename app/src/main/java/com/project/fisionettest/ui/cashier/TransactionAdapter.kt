@@ -29,6 +29,13 @@ class TransactionAdapter : ListAdapter<Transaction, TransactionAdapter.ViewHolde
             binding.tvPatientName.text = transaction.patient_name
             binding.tvPackageName.text = transaction.package_name
             binding.tvAmount.text = format.format(transaction.amount)
+            
+            if (!transaction.user_name.isNullOrBlank()) {
+                binding.tvUserName.text = "Oleh: ${transaction.user_name}"
+                binding.tvUserName.visibility = android.view.View.VISIBLE
+            } else {
+                binding.tvUserName.visibility = android.view.View.GONE
+            }
         }
     }
 

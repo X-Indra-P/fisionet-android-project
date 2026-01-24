@@ -16,6 +16,8 @@ import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.postgrest.query.Columns
 import io.github.jan.supabase.postgrest.query.filter.FilterOperator
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 
 class AppointmentFragment : Fragment() {
     private var _binding: FragmentAppointmentBinding? = null
@@ -169,20 +171,17 @@ class AppointmentFragment : Fragment() {
             if (selectedPatient != null && selectedDate != null && selectedTime != null) {
                 lifecycleScope.launch {
                     try {
-                        val authUser = SupabaseClient.client.auth.currentSessionOrNull()?.user
-                        val therapistId = authUser?.id ?: return@launch
-
+                        // Auth user id no longer needed for appointment creation
                         val dbStatus = "Terjadwal"
 
-                        val newAppointment = Appointment(
-                            patient_id = selectedPatient?.id,
-                            patient_name = selectedPatient!!.name,
-                            therapist_id = therapistId,
-                            date = selectedDate!!,
-                            time = selectedTime!!,
-                            status = dbStatus,
-                            notes = if (notes.isBlank()) null else notes
-                        )
+                        val newAppointment = kotlinx.serialization.json.buildJsonObject {
+                            put("patient_id", selectedPatient?.id)
+                            put("patient_name", selectedPatient!!.name)
+                            put("date", selectedDate!!)
+                            put("time", selectedTime!!)
+                            put("status", dbStatus)
+                            put("notes", if (notes.isBlank()) null else notes)
+                        }
                         SupabaseClient.client.from("appointments").insert(newAppointment)
                         loadAppointments()
                         dialog.dismiss()

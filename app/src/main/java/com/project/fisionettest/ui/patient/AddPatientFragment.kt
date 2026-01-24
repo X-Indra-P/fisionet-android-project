@@ -15,6 +15,8 @@ import com.project.fisionettest.databinding.FragmentAddPatientBinding
 import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.postgrest.from
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 
 class AddPatientFragment : Fragment() {
     private var _binding: FragmentAddPatientBinding? = null
@@ -78,17 +80,18 @@ class AddPatientFragment : Fragment() {
                     return@launch
                 }
 
-                val newPatient = Patient(
-                    name = name,
-                    umur = ageString.toIntOrNull(),
-                    pekerjaan = occupation,
-                    therapist_id = user.id,
-                    phone = phone.ifBlank { null },
-                    address = address.ifBlank { null },
-                    gender = gender
-                )
+                // Use JsonObject to avoid sending null 'id' and 'created_at' which fails on insert
+                val patientData = kotlinx.serialization.json.buildJsonObject {
+                    put("name", name)
+                    put("umur", ageString.toIntOrNull())
+                    put("pekerjaan", occupation)
+                    put("phone", phone.ifBlank { null })
+                    put("address", address.ifBlank { null })
+                    put("gender", binding.etGender.text.toString().substring(0, 1)) // "Laki-laki" -> "L", "Perempuan" -> "P"
+                    put("status", "Aktif")
+                }
 
-                SupabaseClient.client.from("patients").insert(newPatient)
+                SupabaseClient.client.from("patients").insert(patientData)
                 Toast.makeText(requireContext(), "Pasien berhasil ditambahkan", Toast.LENGTH_SHORT).show()
                 findNavController().popBackStack()
             } catch (e: Exception) {

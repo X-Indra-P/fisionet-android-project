@@ -35,6 +35,7 @@ class DashboardFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // Get logged-in user
+        // Get logged-in user
         val user = SupabaseClient.client.auth.currentUserOrNull()
         if (user != null) {
             // Try to get name from metadata
