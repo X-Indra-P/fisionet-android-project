@@ -64,6 +64,17 @@ class PatientDetailFragment : Fragment() {
             }
             findNavController().navigate(R.id.action_patient_detail_to_add_diagnosis, bundle)
         }
+
+        binding.btnBack.setOnClickListener {
+            findNavController().popBackStack()
+        }
+
+        binding.btnPatientHistory.setOnClickListener {
+            val bundle = Bundle().apply {
+                putInt("patientId", patientId)
+            }
+            findNavController().navigate(R.id.action_patient_detail_to_transaction_history, bundle)
+        }
     }
 
     private fun setupRecyclerView() {

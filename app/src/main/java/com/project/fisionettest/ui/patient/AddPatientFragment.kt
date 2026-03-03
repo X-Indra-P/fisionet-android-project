@@ -39,6 +39,10 @@ class AddPatientFragment : Fragment() {
         binding.btnSave.setOnClickListener {
             savePatient()
         }
+
+        binding.btnBack.setOnClickListener {
+            findNavController().popBackStack()
+        }
     }
 
     private fun setupGenderDropdown() {
@@ -88,7 +92,6 @@ class AddPatientFragment : Fragment() {
                     put("phone", phone.ifBlank { null })
                     put("address", address.ifBlank { null })
                     put("gender", binding.etGender.text.toString().substring(0, 1)) // "Laki-laki" -> "L", "Perempuan" -> "P"
-                    put("status", "Aktif")
                 }
 
                 SupabaseClient.client.from("patients").insert(patientData)

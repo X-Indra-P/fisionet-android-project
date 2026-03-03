@@ -74,24 +74,20 @@ class DashboardFragment : Fragment() {
                 val patients = SupabaseClient.client.from("patients").select().decodeList<Patient>()
                 binding.tvTotalPatients.text = patients.size.toString()
 
-                // Load medical records for statistics
-                // Load medical records for statistics (now diagnosis)
-                val records = SupabaseClient.client.from("diagnosis").select().decodeList<com.project.fisionettest.data.model.Diagnosis>()
+                // Load transactions for statistics
+                val transactions = SupabaseClient.client.from("transactions").select().decodeList<com.project.fisionettest.data.model.Transaction>()
                 val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
                 val today = dateFormat.format(Date())
                 val currentMonth = today.substring(0, 7) // "yyyy-MM"
 
-                // Calculate today's patients (unique patients with records today)
-                val todayPatients = records.filter { it.date == today }
-                    .distinctBy { it.patient_id }
-                    .count()
-                binding.tvTodayPatients.text = todayPatients.toString()
+                // Calculate today's transactions (Pasien Hari Ini)
+                // User requested: 1 transaction -> +1 count. Assuming counting visits/transactions.
+                val todayTransactions = transactions.count { it.date == today }
+                binding.tvTodayPatients.text = todayTransactions.toString()
 
-                // Calculate month's patients (unique patients with records this month)
-                val monthPatients = records.filter { it.date.startsWith(currentMonth) }
-                    .distinctBy { it.patient_id }
-                    .count()
-                binding.tvMonthPatients.text = monthPatients.toString()
+                // Calculate month's transactions (Bulan Ini)
+                val monthTransactions = transactions.count { it.date.startsWith(currentMonth) }
+                binding.tvMonthPatients.text = monthTransactions.toString()
 
             } catch (e: Exception) {
                 // Handle error silently or show error message

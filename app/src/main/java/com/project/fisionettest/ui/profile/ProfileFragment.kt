@@ -50,9 +50,13 @@ class ProfileFragment : Fragment() {
 
     private fun showEditProfileDialog() {
         val context = requireContext()
+        val density = resources.displayMetrics.density
+        val paddingHorizontal = (24 * density).toInt()
+        val paddingTop = (24 * density).toInt()
+
         val inputLayout = com.google.android.material.textfield.TextInputLayout(context).apply {
             hint = "Nama Tampilan Baru"
-            setPadding(32, 16, 32, 0)
+            setPadding(paddingHorizontal, paddingTop, paddingHorizontal, 0)
         }
         val input = com.google.android.material.textfield.TextInputEditText(context)
         inputLayout.addView(input)
@@ -89,9 +93,13 @@ class ProfileFragment : Fragment() {
 
     private fun showChangePasswordDialog() {
         val context = requireContext()
+        val density = resources.displayMetrics.density
+        val paddingHorizontal = (24 * density).toInt()
+        val paddingTop = (24 * density).toInt()
+        
         val inputLayout = com.google.android.material.textfield.TextInputLayout(context).apply {
             hint = "Password Baru"
-            setPadding(32, 16, 32, 0)
+            setPadding(paddingHorizontal, paddingTop, paddingHorizontal, 0)
         }
         val input = com.google.android.material.textfield.TextInputEditText(context).apply {
             inputType = android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD

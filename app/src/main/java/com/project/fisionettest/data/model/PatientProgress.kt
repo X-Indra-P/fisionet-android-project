@@ -6,6 +6,7 @@ import kotlinx.serialization.Serializable
 data class PatientProgress(
     val id: Int? = null,
     val patient_id: Int,
+    val diagnosis_id: Int? = null, // Added diagnosis_id 
     val date: String,
     val progress_note: String,
     val created_at: String? = null

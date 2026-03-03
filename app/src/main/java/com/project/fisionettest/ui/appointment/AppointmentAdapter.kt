@@ -22,7 +22,10 @@ class AppointmentAdapter : ListAdapter<Appointment, AppointmentAdapter.Appointme
     override fun onBindViewHolder(holder: AppointmentViewHolder, position: Int) {
         holder.bind(getItem(position))
         holder.itemView.setOnClickListener {
-            onItemClick?.invoke(getItem(position))
+            val currentPosition = holder.bindingAdapterPosition
+            if (currentPosition != RecyclerView.NO_POSITION) {
+                onItemClick?.invoke(getItem(currentPosition))
+            }
         }
     }
 

@@ -52,8 +52,13 @@ dependencies {
     implementation(libs.supabase.postgrest)
     implementation(libs.supabase.gotrue)
     implementation(libs.ktor.client.cio)
+    implementation("io.ktor:ktor-client-android:2.3.12")
+    implementation("io.ktor:ktor-client-core:2.3.12")
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.recyclerview)
+
+    // Midtrans SDK
+    implementation("com.midtrans:uikit:2.0.0-SANDBOX")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

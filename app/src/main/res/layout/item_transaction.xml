@@ -64,5 +64,24 @@
             android:textColor="@color/text_secondary"
             android:layout_marginTop="4dp"/>
 
+        <TextView
+            android:id="@+id/tv_cabang"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cabang: -"
+            android:textSize="12sp"
+            android:textColor="@color/text_secondary"
+            android:layout_marginTop="4dp"/>
+
+        <TextView
+            android:id="@+id/tv_payment_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Status Pembayaran:"
+            android:textStyle="bold"
+            android:textSize="12sp"
+            android:textColor="@color/black"
+            android:layout_marginTop="4dp"/>
+
     </LinearLayout>
 </androidx.cardview.widget.CardView>

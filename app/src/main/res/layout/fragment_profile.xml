@@ -22,7 +22,10 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:gravity="center_horizontal"
-                android:padding="24dp">
+                android:paddingStart="24dp"
+                android:paddingEnd="24dp"
+                android:paddingBottom="24dp"
+                android:paddingTop="48dp">
 
                 <com.google.android.material.imageview.ShapeableImageView
                     android:id="@+id/iv_profile"
@@ -169,6 +172,7 @@
                 android:id="@+id/btn_logout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textSize="16dp"
                 android:text="Keluar"
                 android:layout_marginTop="24dp"
                 android:textColor="@color/white"

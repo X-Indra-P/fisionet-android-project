@@ -37,6 +37,10 @@ class CashierMenuFragment : Fragment() {
         binding.cardHistory.setOnClickListener {
             findNavController().navigate(R.id.action_cashierMenu_to_history)
         }
+
+        binding.btnBack.setOnClickListener {
+            findNavController().popBackStack()
+        }
     }
 
     override fun onDestroyView() {

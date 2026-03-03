@@ -17,6 +17,11 @@
             app:destination="@id/dashboardFragment"
             app:popUpTo="@id/loginFragment"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_login_to_admin_dashboard"
+            app:destination="@id/adminDashboardFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <fragment
@@ -95,6 +100,9 @@
         <action
             android:id="@+id/action_patient_detail_to_diagnosis_detail"
             app:destination="@id/diagnosisDetailFragment" />
+        <action
+            android:id="@+id/action_patient_detail_to_transaction_history"
+            app:destination="@id/transactionHistoryFragment" />
     </fragment>
 
     <fragment
@@ -161,6 +169,35 @@
     <fragment
         android:id="@+id/transactionHistoryFragment"
         android:name="com.project.fisionettest.ui.cashier.TransactionHistoryFragment"
-        android:label="Riwayat Transaksi" />
+        android:label="Riwayat Transaksi">
+        <argument
+            android:name="patientId"
+            app:argType="integer"
+            android:defaultValue="-1" />
+        <action
+            android:id="@+id/action_transactionHistoryFragment_to_transactionDetailFragment"
+            app:destination="@id/transactionDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/transactionDetailFragment"
+        android:name="com.project.fisionettest.ui.cashier.TransactionDetailFragment"
+        android:label="Detail Transaksi"
+        tools:layout="@layout/fragment_transaction_detail">
+        <argument
+            android:name="transactionId"
+            app:argType="integer" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/adminDashboardFragment"
+        android:name="com.project.fisionettest.ui.admin.AdminDashboardFragment"
+        android:label="Admin Dashboard">
+        <action
+            android:id="@+id/action_adminDashboard_to_login"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/nav_graph"
+            app:popUpToInclusive="true" />
+    </fragment>
 
 </navigation>

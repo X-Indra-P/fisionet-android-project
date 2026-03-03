@@ -48,9 +48,55 @@ class AddDiagnosisFragment : Fragment() {
         binding.etDate.setOnClickListener {
             showDatePicker()
         }
+        
+        loadExistingDiagnoses()
+
+        // Toggle Inspection Input
+        binding.tilInspection.visibility = View.GONE // Default hidden
+        binding.cbHasInspection.isChecked = false
+
+        binding.cbHasInspection.setOnCheckedChangeListener { _, isChecked ->
+            binding.tilInspection.visibility = if (isChecked) View.VISIBLE else View.GONE
+            if (!isChecked) {
+                binding.etInspection.text?.clear()
+            }
+        }
 
         binding.btnSave.setOnClickListener {
             saveDiagnosis()
+        }
+
+        binding.btnBack.setOnClickListener {
+            findNavController().popBackStack()
+        }
+    }
+
+    private fun loadExistingDiagnoses() {
+        lifecycleScope.launch {
+            try {
+                // Fetch all diagnoses to get unique names. 
+                // Use JsonObject to avoid MissingFieldException because we only select 'diagnosa'.
+                val diagnoses = SupabaseClient.client.from("diagnosis")
+                    .select(columns = io.github.jan.supabase.postgrest.query.Columns.list("diagnosa"))
+                    .decodeList<kotlinx.serialization.json.JsonObject>()
+                
+                // Extract 'diagnosa' string from JsonObject
+                val distinctDiagnoses = diagnoses.mapNotNull { 
+                    it["diagnosa"]?.toString()?.replace("\"", "") 
+                }.filter { it.isNotBlank() }.distinct().sorted()
+                
+                if (distinctDiagnoses.isNotEmpty()) {
+                    val adapter = android.widget.ArrayAdapter(
+                        requireContext(),
+                        android.R.layout.simple_dropdown_item_1line,
+                        distinctDiagnoses
+                    )
+                    binding.etDiagnosis.setAdapter(adapter)
+                }
+            } catch (e: Exception) {
+                // Silent fail for autocomplete suggestions is acceptable, but log likely needed if debugging
+                e.printStackTrace()
+            }
         }
     }
 

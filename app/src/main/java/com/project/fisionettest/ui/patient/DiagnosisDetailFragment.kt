@@ -68,6 +68,10 @@ class DiagnosisDetailFragment : Fragment() {
         binding.btnDeleteRecord.setOnClickListener {
             showDeleteConfirmation()
         }
+
+        binding.btnBack.setOnClickListener {
+            findNavController().popBackStack()
+        }
     }
 
     private fun displayRecord(record: com.project.fisionettest.data.model.Diagnosis) {
@@ -181,7 +185,11 @@ class DiagnosisDetailFragment : Fragment() {
         lifecycleScope.launch {
             try {
                 val progressList = SupabaseClient.client.from("patient_progress").select {
-                    filter { eq("patient_id", patientId) }
+                    filter {
+                         eq("patient_id", patientId)
+                         // Also filter by diagnosis_id if available to show only relevant progress
+                         currentRecord?.id?.let { eq("diagnosis_id", it) }
+                    }
                     order("date", Order.DESCENDING)
                 }.decodeList<com.project.fisionettest.data.model.PatientProgress>()
                 
@@ -232,6 +240,7 @@ class DiagnosisDetailFragment : Fragment() {
             try {
                 val newProgress = com.project.fisionettest.data.model.PatientProgress(
                     patient_id = patientId,
+                    diagnosis_id = currentRecord?.id, // Pass current diagnosis ID
                     date = date,
                     progress_note = note
                 )

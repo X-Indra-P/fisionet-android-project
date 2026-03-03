@@ -42,6 +42,10 @@ class EditPatientFragment : Fragment() {
         binding.btnSave.setOnClickListener {
             updatePatient()
         }
+
+        binding.btnBack.setOnClickListener {
+            findNavController().popBackStack()
+        }
     }
 
     private fun setupGenderDropdown() {

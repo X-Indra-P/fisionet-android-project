@@ -10,9 +10,38 @@
         android:orientation="vertical"
         android:padding="16dp">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp">
+
+            <ImageView
+                android:id="@+id/btn_back"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_back"
+                android:layout_marginEnd="16dp"
+                app:tint="@color/black"
+                android:contentDescription="Back"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackgroundBorderless"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Detail Pasien"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
             android:layout_marginBottom="16dp"
             app:cardElevation="4dp"
             app:cardCornerRadius="8dp">
@@ -100,6 +129,16 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_patient_history"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Riwayat Pasien"
+            android:layout_marginBottom="24dp"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            app:icon="@drawable/ic_history" 
+            app:iconGravity="textStart"/>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -118,6 +157,7 @@
                 android:id="@+id/btn_add_medical_record"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textSize="16dp"
                 android:text="Tambah"
                 style="@style/Widget.Material3.Button.TextButton" />
         </LinearLayout>
@@ -131,7 +171,7 @@
             android:id="@+id/tv_empty_records"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Belum ada rekam medis"
+            android:text="Belum ada diagnosis"
             android:layout_gravity="center"
             android:layout_marginTop="32dp" />
 

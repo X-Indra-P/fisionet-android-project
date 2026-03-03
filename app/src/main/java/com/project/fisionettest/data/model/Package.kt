@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Package(
-    val id: Long? = null,
+    val id: Int? = null,
     val name: String,
     val price: Double,
     val tools: List<String> = emptyList(),

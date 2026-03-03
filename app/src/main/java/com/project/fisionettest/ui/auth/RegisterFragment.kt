@@ -34,14 +34,37 @@ class RegisterFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.btnRegister.setOnClickListener {
-            val name = binding.etName.text.toString()
-            val email = binding.etEmail.text.toString()
-            val password = binding.etPassword.text.toString()
+            val name = binding.etName.text.toString().trim()
+            val email = binding.etEmail.text.toString().trim()
+            val password = binding.etPassword.text.toString().trim()
 
-            if (name.isBlank() || email.isBlank() || password.isBlank()) {
-                Toast.makeText(requireContext(), "Semua field harus diisi", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
+            binding.tilName.error = null
+            binding.tilEmail.error = null
+            binding.tilPassword.error = null
+            var isValid = true
+
+            if (name.isBlank()) {
+                binding.tilName.error = "Nama harus diisi"
+                isValid = false
             }
+
+            if (email.isBlank()) {
+                binding.tilEmail.error = "Email harus diisi"
+                isValid = false
+            } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                binding.tilEmail.error = "Format email tidak valid"
+                isValid = false
+            }
+            
+            if (password.isBlank()) {
+                binding.tilPassword.error = "Password harus diisi"
+                isValid = false
+            } else if (password.length < 6) {
+                binding.tilPassword.error = "Password minimal 6 karakter"
+                isValid = false
+            }
+
+            if (!isValid) return@setOnClickListener
 
             registerUser(name, email, password)
         }

@@ -4,14 +4,20 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Transaction(
-    val id: Long? = null,
+    val id: Int? = null,
     val date: String, // Format: YYYY-MM-DD
     val patient_id: Int?,
-    val patient_name: String,
-    val package_id: Long?,
-    val package_name: String,
-    val amount: Double,
+    val diagnosis_id: Int? = null,
+    val package_id: Int? = null, // New field
+    val total_amount: Double,
+    val payment_status: String? = "pending", // Payment status (pending, success, failed, etc)
     val user_id: String? = null,
-    val user_name: String? = null,
-    val created_at: String? = null
+    val user_name: String? = null, // Restored for display
+    val cabang: String? = null, // New field for branch
+    val created_at: String? = null,
+
+    // Relations for fetching (will be null during insert)
+    val patients: Patient? = null,
+    val diagnosis: Diagnosis? = null,
+    val packages: Package? = null // New relation
 )

@@ -7,6 +7,10 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.project.fisionettest.databinding.ActivityMainBinding
+import com.midtrans.sdk.uikit.external.UiKitApi
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -17,7 +21,22 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        setupMidtrans()
         setupNavigation()
+    }
+
+    private fun setupMidtrans() {
+        val clientKey = "Mid-client-3-jjqxeEzLKfjlw7"
+        val merchantBaseUrl = "https://fisionet.midtrans.com/"
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            UiKitApi.Builder()
+                .withContext(this@MainActivity.applicationContext)
+                .withMerchantUrl(merchantBaseUrl)
+                .withMerchantClientKey(clientKey)
+                .enableLog(true)
+                .build()
+        }
     }
 
     private fun setupNavigation() {

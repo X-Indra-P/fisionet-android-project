@@ -10,7 +10,7 @@ import com.project.fisionettest.databinding.ItemTransactionBinding
 import java.text.NumberFormat
 import java.util.Locale
 
-class TransactionAdapter : ListAdapter<Transaction, TransactionAdapter.ViewHolder>(DiffCallback()) {
+class TransactionAdapter(private val onItemClick: (Transaction) -> Unit) : ListAdapter<Transaction, TransactionAdapter.ViewHolder>(DiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = ItemTransactionBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -18,7 +18,11 @@ class TransactionAdapter : ListAdapter<Transaction, TransactionAdapter.ViewHolde
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(getItem(position))
+        val transaction = getItem(position)
+        holder.bind(transaction)
+        holder.itemView.setOnClickListener {
+            onItemClick(transaction)
+        }
     }
 
     class ViewHolder(private val binding: ItemTransactionBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -26,16 +30,32 @@ class TransactionAdapter : ListAdapter<Transaction, TransactionAdapter.ViewHolde
             val format = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
             
             binding.tvDate.text = transaction.date
-            binding.tvPatientName.text = transaction.patient_name
-            binding.tvPackageName.text = transaction.package_name
-            binding.tvAmount.text = format.format(transaction.amount)
+            binding.tvPatientName.text = transaction.patients?.name ?: "Pasien tidak ditemukan"
             
+            // Derive package names from details
+            val packageNames = transaction.packages?.name ?: "-"
+            binding.tvPackageName.text = packageNames
+            
+            binding.tvAmount.text = format.format(transaction.total_amount)
+            
+            // Display therapist name
             if (!transaction.user_name.isNullOrBlank()) {
-                binding.tvUserName.text = "Oleh: ${transaction.user_name}"
-                binding.tvUserName.visibility = android.view.View.VISIBLE
+                 binding.tvUserName.text = transaction.user_name
+                 binding.tvUserName.visibility = android.view.View.VISIBLE
             } else {
-                binding.tvUserName.visibility = android.view.View.GONE
+                 binding.tvUserName.visibility = android.view.View.GONE
             }
+
+            // Display Cabang
+            if (!transaction.cabang.isNullOrBlank()) {
+                binding.tvCabang.text = transaction.cabang
+                binding.tvCabang.visibility = android.view.View.VISIBLE
+            } else {
+                binding.tvCabang.visibility = android.view.View.GONE
+            }
+
+            // Display Payment Status
+            binding.tvPaymentStatus.text = "Status Pembayaran: ${transaction.payment_status ?: "pending"}"
         }
     }
 

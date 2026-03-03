@@ -7,10 +7,12 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.project.fisionettest.data.SupabaseClient
 import com.project.fisionettest.data.model.Transaction
 import com.project.fisionettest.databinding.FragmentTransactionHistoryBinding
+import com.project.fisionettest.R
 import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.postgrest.query.Order
 import kotlinx.coroutines.launch
@@ -35,10 +37,22 @@ class TransactionHistoryFragment : Fragment() {
 
         setupRecyclerView()
         loadTransactions()
+
+        binding.btnBack.setOnClickListener {
+            findNavController().popBackStack()
+        }
     }
 
     private fun setupRecyclerView() {
-        adapter = TransactionAdapter()
+        adapter = TransactionAdapter { transaction ->
+            if (transaction.id != null) {
+                // Navigate to detail
+                val bundle = Bundle().apply {
+                    putInt("transactionId", transaction.id)
+                }
+                findNavController().navigate(R.id.action_transactionHistoryFragment_to_transactionDetailFragment, bundle)
+            }
+        }
         binding.rvTransactions.layoutManager = LinearLayoutManager(requireContext())
         binding.rvTransactions.adapter = adapter
     }
@@ -46,9 +60,16 @@ class TransactionHistoryFragment : Fragment() {
     private fun loadTransactions() {
         lifecycleScope.launch {
             try {
+                val patientId = arguments?.getInt("patientId", -1) ?: -1
+                
                 val transactions = SupabaseClient.client
                     .from("transactions")
-                    .select {
+                    .select(columns = io.github.jan.supabase.postgrest.query.Columns.raw("*, patients(*), packages(*), diagnosis(*)")) {
+                        if (patientId != -1) {
+                            filter {
+                                eq("patient_id", patientId)
+                            }
+                        }
                         order("created_at", order = Order.DESCENDING)
                     }
                     .decodeList<Transaction>()

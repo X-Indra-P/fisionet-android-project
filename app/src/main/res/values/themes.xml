@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.FisioNetTest" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.PhysioNet" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/primary_blue</item>
         <item name="colorPrimaryVariant">@color/primary_dark</item>
@@ -16,6 +16,6 @@
         <item name="android:windowLightStatusBar">true</item>
         
         <!-- Background colors -->
-        <item name="android:colorBackground">@color/background_gray</item>
+        <item name="android:colorBackground">@color/white</item>
     </style>
 </resources>
