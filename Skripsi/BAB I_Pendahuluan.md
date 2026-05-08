@@ -7,50 +7,11 @@ penulisan laporan tugas akhir.
 
 ## Latar Belakang
 
-Kemajuan teknologi informasi kesehatan mendorong transformasi digital
-yang signifikan untuk meningkatkan mutu pelayanan. Sejalan dengan
-Peraturan Menteri Kesehatan RI No. 24 Tahun 2022 yang mewajibkan seluruh
-fasilitas kesehatan menerapkan Rekam Medis Elektronik (RME).
-Implementasi digitalisasi pada pelayanan fisioterapi masih terkendala
-oleh dominasi pencatatan manual. Sistem berbasis kertas terbukti kurang
-efektif mengingat tingginya risiko kerusakan dan kehilangan data, yang
-pada akhirnya memperlambat akses rekam medis untuk evaluasi perkembangan
-pasien (Firdonsyah and Dewi, 2024).
+Kemajuan teknologi informasi kesehatan mendorong transformasi digital yang signifikan untuk meningkatkan mutu pelayanan. Sejalan dengan Peraturan Menteri Kesehatan RI No. 24 Tahun 2022 yang mewajibkan seluruh fasilitas kesehatan menerapkan Rekam Medis Elektronik (RME). Implementasi digitalisasi pada pelayanan fisioterapi masih terkendala oleh dominasi pencatatan manual. Sistem berbasis kertas terbukti kurang efektif mengingat tingginya risiko kerusakan dan kehilangan data, yang pada akhirnya memperlambat akses rekam medis untuk evaluasi perkembangan pasien (Firdonsyah and Dewi, 2024).
+Penelitian sebelumnya oleh (Khabib, Rozi and Rosadi, 2023) telah mencoba mengatasi masalah serupa dengan mengembangkan aplikasi rekam medis berbasis Android untuk Puskesmas. Studi menunjukkan bahwa penggunaan perangkat mobile dapat secara signifikan meningkatkan kerja staf dibandingkan dengan sistem pencatatan hybrid yang masih menggunakan dokumen fisik. Penelitian oleh (Binti et al., 2020) mengembangkan sistem rekam medis berbasis web menggunakan framework Laravel. Hasil penelitian menekankan bahwa digitalisasi rekam medis sangat krusial untuk mengurangi risiko kerusakan data yang sering terjadi pada klinik swasta yang sedang berkembang.
+Berdasarkan kajian literatur sebelumnya, pengembangan sistem informasi kesehatan masih didominasi oleh platform berbasis web yang sangat bergantung pada stabilitas konektivitas internet. Aplikasi rekam medis yang tersedia di pasaran umumnya dirancang secara general untuk rumah sakit besar, sehingga belum mengakomodasi kebutuhan spesifik layanan fisioterapi. Kenyataannya, masih terdapat kesenjangan ketersediaan aplikasi mobile native untuk alur kerja fisioterapi di PhysioNet, khususnya dalam hal dokumentasi sesi terapi berulang dan fleksibilitas akses data tanpa keterbatasan perangkat komputer meja (desktop).
+Kendala operasional akibat pengelolaan data manual di PhysioNet menuntut implementasi solusi teknologi yang mampu mengintegrasikan seluruh layanan, mulai dari pendaftaran pasien, dokumentasi rekam medis, pembuatan jadwal janji temu, riwayat terapi pasien, hingga pemantauan progres klinis dalam satu platform digital terpusat. Pembeda utama penelitian ini dengan penelitian sebelumnya terletak pada integrasi sistem manajemen keuangan yang memanfaatkan Midtrans sebagai payment gateway untuk mendukung pembayaran digital via QRIS, serta implementasi sistem penjadwalan pasien yang dirancang khusus untuk menangani sesi terapi berulang secara otomatis. Pemanfaatan teknologi berbasis Android menjadi solusi strategis karena menawarkan keunggulan berupa mobilitas perangkat serta pengoperasian yang intuitif bagi pengguna. Pemilihan platform Android didasarkan pada dominasi sistem operasi di pasar gawai Indonesia serta kemudahan aksesibilitas bagi tenaga kesehatan. Dengan demikian, sistem berbasis mobile ini memungkinkan terapis untuk mengakses data pasien secara real-time, mencatat perkembangan terapi secara digital, dan mengelola jadwal serta transaksi dengan lebih efisien.
 
-Penelitian sebelumnya oleh (Khabib, Rozi and Rosadi, 2023) telah mencoba
-mengatasi masalah serupa dengan mengembangkan aplikasi rekam medis
-berbasis Android untuk Puskesmas. Studi menunjukkan bahwa penggunaan
-perangkat *mobile* dapat secara signifikan meningkatkan kerja staf
-dibandingkan dengan sistem pencatatan *hybrid* yang masih menggunakan
-dokumen fisik. Penelitian oleh (Binti *et al.*, 2020) mengembangkan
-sistem rekam medis berbasis *web* menggunakan *framework* Laravel. Hasil
-penelitian menekankan bahwa digitalisasi rekam medis sangat krusial
-untuk mengurangi risiko kerusakan data yang sering terjadi pada klinik
-swasta yang sedang berkembang.
-
-Berdasarkan kajian literatur sebelumnya, pengembangan sistem informasi
-kesehatan masih didominasi oleh *platform* berbasis *web* yang sangat
-bergantung pada stabilitas konektivitas internet. Aplikasi rekam medis
-yang tersedia di pasaran umumnya dirancang secara general untuk rumah
-sakit besar, sehingga belum mengakomodasi kebutuhan spesifik layanan
-fisioterapi. Kenyataannya, masih terdapat kesenjangan ketersediaan
-aplikasi *mobile native* untuk alur kerja fisioterapi di PhysioNet,
-khususnya dalam hal dokumentasi sesi terapi berulang dan fleksibilitas
-akses data tanpa keterbatasan perangkat komputer meja (*desktop*).
-
-Kendala operasional akibat pengelolaan data manual di PhysioNet menuntut
-implementasi solusi teknologi yang mampu mengintegrasikan seluruh
-layanan, mulai dari pendaftaran pasien, dokumentasi rekam medis,
-pembuatan jadwal janji temu, riwayat terapi pasien, hingga pemantauan
-progres klinis dalam satu *platform* digital terpusat. Pemanfaatan
-teknologi berbasis Android menjadi solusi strategis karena menawarkan
-keunggulan berupa mobilitas perangkat serta pengoperasian yang intuitif
-bagi pengguna. Pemilihan *platform* Android didasarkan pada dominasi
-sistem operasi di pasar gawai Indonesia serta kemudahan aksesibilitas
-bagi tenaga kesehatan. Dengan demikian, sistem berbasis *mobile* ini
-memungkinkan terapis untuk mengakses data pasien secara *real-time*,
-mencatat perkembangan terapi secara digital, dan mengelola jadwal dengan
-lebih efisien.
 
 ## Rumusan Masalah
 

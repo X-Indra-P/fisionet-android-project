@@ -528,8 +528,7 @@ Diagram* untuk sistem ini dipaparkan pada gambar berikut.
 
 Gambar 3. 11 *Use Case* Diagram
 
-Gambar 3.11 menunjukkan *Use Case* Diagram Aplikasi PhysioNet yang
-melibatkan 1 aktor utama, yaitu Terapis (User). Terapis dapat melakukan
+Gambar 3.11 menunjukkan *Use Case* Diagram Aplikasi PhysioNet yang melibatkan 2 aktor utama, yaitu Terapis dan Admin. Terapis dapat melakukan
 registrasi dan login untuk mendapatkan akses ke berbagai fungsi
 manajemen layanan kesehatan. Dalam sistem ini, Terapis memiliki wewenang
 penuh untuk mengelola data pasien, yang meliputi kegiatan menambah
@@ -543,6 +542,10 @@ halaman Dashboard bagi Terapis untuk melihat jadwal, mencari pasien, dan
 mencetak pelaporan. Terdapat pula fitur khusus berupa Mode Cashier yang
 memungkinkan Terapis untuk mengelola transaksi, mencakup melihat riwayat
 transaksi, mengelola paket terapi, dan mencetak nota pembayaran.
+Sementara itu, Admin memiliki wewenang khusus untuk melakukan manajemen
+terhadap akun Terapis, yang meliputi verifikasi persetujuan pendaftaran,
+penolakan akun, serta memantau statistik pendaftaran terapis dan aktivitas
+klinik secara keseluruhan melalui Dashboard Admin.
 
 ## Diagram Konteks
 
@@ -566,15 +569,18 @@ dilihat pada gambar berikut.
 Gambar 3. 12 Diagram Konteks
 
 Gambar 3.12 mengilustrasikan Diagram Konteks untuk Aplikasi Manajemen
-Pasien Berbasis Android, yang memperlihatkan Terapis sebagai entitas
-eksternal utama yang berinteraksi dengan sistem. Dalam alur kerjanya,
+Pasien Berbasis Android, yang memperlihatkan Terapis dan Admin sebagai
+entitas eksternal utama yang berinteraksi dengan sistem. Dalam alur kerjanya,
 Terapis memberikan *input* data yang mencakup proses Login, Register,
 Data Pasien Baru, Diagnosa, Appointment, Perkembangan Pasien, hingga
 Data Transaksi. Sistem kemudian memproses masukan tersebut dan
 memberikan *output* berupa informasi vital bagi Terapis, seperti Status
 Validasi akun, Informasi Detail Pasien dan Diagnosis, serta laporan
 Riwayat Transaksi dan Perkembangan Pasien untuk mendukung pengambilan
-keputusan medis.
+keputusan medis. Di sisi lain, Admin berinteraksi dengan sistem melalui
+pengelolaan validasi akun Terapis dan menerima output berupa informasi
+statistik pendaftaran serta ringkasan aktivitas operasional klinik untuk
+keperluan manajerial.
 
 ## Data Flow Diagram
 
@@ -610,14 +616,16 @@ Gambar 3. 13 DFD Level 0 Aplikasi PhysioNet
 
 Gambar 3.13 mengilustrasikan alur data pada DFD Level 0 yang terdiri
 dari tujuh proses fungsional, diawali dengan Manajemen Autentikasi (1.0)
-yang mengelola data pengguna dan sesi lokal. Terapis sebagai pengguna
-utama berinteraksi secara langsung melakukan *input* dan pengelolaan
-data pada proses Manajemen Pasien (2.0), Diagnosis (3.0), Appointment
-(4.0), Progres Pasien (5.0), serta Manajemen Transaksi (6.0). Seluruh
-data hasil proses tersebut disimpan secara terstruktur ke dalam tabel
-penyimpanan terkait (D1 hingga D8) dan kemudian ditarik kembali pada
-proses Pelaporan (7.0) untuk menyajikan informasi rekapitulasi yang
-valid kepada Terapis.
+yang mengelola data pengguna dan sesi lokal. Terapis dan Admin sebagai
+pengguna berinteraksi secara langsung melakukan *input* dan pengelolaan
+data pada proses masing-masing. Terapis fokus pada proses Manajemen Pasien
+(2.0), Diagnosis (3.0), Appointment (4.0), Progres Pasien (5.0), serta
+Manajemen Transaksi (6.0). Admin terlibat dalam proses Manajemen Autentikasi
+(1.0) untuk verifikasi Terapis dan dapat mengakses proses Pelaporan (7.0)
+untuk mendapatkan dashboard statistik. Seluruh data hasil proses tersebut
+disimpan secara terstruktur ke dalam tabel penyimpanan terkait (D1 hingga D8)
+dan kemudian ditarik kembali pada proses Pelaporan (7.0) untuk menyajikan
+informasi rekapitulasi yang valid kepada pengguna.
 
 ### Data Flow Diagram Level 1
 
@@ -902,15 +910,17 @@ untuk memberikan detail teknis terhadap aliran data yang terdapat pada
 *Data Flow Diagram* (DFD). Berikut adalah struktur kamus data untuk
 aplikasi PhysioNet berbasis Android yang telah dirancang.
 
+fungsionalitas sistem yang diharapkan.
+
 #### Kamus Data User
 
 Tabel berikut menyajikan struktur Kamus Data untuk entitas User, yang
 berfungsi sebagai tempat penyimpanan utama data identitas pengguna
-aplikasi, dalam hal ini adalah Terapis. Tabel ini dirancang untuk
-mengelola informasi vital yang mencakup kredensial otentikasi serta data
-profil pribadi pengguna. Setiap rekam data di dalamnya memiliki peran
+aplikasi, yang mencakup peran Admin dan Terapis. Tabel ini dirancang untuk
+mengelola informasi vital yang mencakup kredensial otentikasi, peran akses,
+serta status verifikasi akun pengguna. Setiap rekam data di dalamnya memiliki peran
 krusial dalam mendukung fitur keamanan sistem, mulai dari proses
-*login*, validasi sesi, hingga pencatatan riwayat aktivitas akun. Adapun
+*login*, validasi sesi, hingga pengelolaan hak akses berdasarkan peran. Adapun
 spesifikasi elemen data untuk tabel User dijabarkan sebagai berikut.
 
 Tabel 3. 1 Kamus Data Tabel User
@@ -922,13 +932,17 @@ Tabel 3. 1 Kamus Data Tabel User
   uid_user           uuid        Berfungsi sebagai *Primary Key* (Kunci
                                  Utama) yang menyimpan ID unik pengguna.
 
-  nama               text        Menyimpan nama lengkap pengguna atau
-                                 Terapis.
+  nama               text        Menyimpan nama lengkap pengguna (Admin
+                                 atau Terapis).
 
   email              varchar     Menyimpan alamat *email* pengguna yang
                                  digunakan sebagai akses *login*.
 
-  phone              text        Menyimpan nomor telepon aktif pengguna.
+  role               integer     Menyimpan peran pengguna (1 = Admin,
+                                 2 = Terapis).
+
+  status             varchar     Menyimpan status akun (pending, verified,
+                                 rejected).
 
   created_at         timestamp   Menyimpan informasi waktu dan tanggal
                                  saat akun pengguna pertama kali dibuat.
@@ -1510,10 +1524,49 @@ Tabel 3. 11 Rancangan Pengujian Fitur Laporan dan Profile
 |   |                    | simpan perubahan   |                       |
 +---+--------------------+--------------------+-----------------------+
 
-Tabel 3.11 merupakan tabel yang berisi rancangan pengujian fitur laporan
-dan manajemen profil pada sistem aplikasi. Pengujian meliputi aktivitas
 pencetakan laporan bulanan dalam format PDF melalui halaman profil serta
 pembaruan data nama tampilan (*display name*) pengguna pada menu
 manajemen profil. Setiap skenario pengujian dirancang untuk memastikan
 bahwa sistem mampu menghasilkan dokumen laporan yang valid dan mengelola
 informasi identitas pengguna sesuai dengan hasil yang diharapkan.
+
+Tabel 3. 12 Rancangan Pengujian Fitur Admin
+
++---+--------------------+--------------------+-----------------------+
+| * | **Aktivitas        | **Skenario         | **Hasil yang          |
+| * | Pengujian**        | Pengujian**        | Diharapkan**          |
+| N |                    |                    |                       |
+| O |                    |                    |                       |
+| * |                    |                    |                       |
+| * |                    |                    |                       |
++===+====================+====================+=======================+
+| 1 | Verifikasi Terapis | \- Akses halaman   | Status Terapis        |
+|   |                    | Admin Dashboard    | berubah menjadi       |
+|   |                    |                    | "Verified" dan dapat  |
+|   |                    | \- Pilih Terapis   | login ke sistem       |
+|   |                    | pending            |                       |
+|   |                    |                    |                       |
+|   |                    | \- Klik tombol     |                       |
+|   |                    | Setuju / Verifikasi|                       |
++---+--------------------+--------------------+-----------------------+
+| 2 | Penolakan Terapis  | \- Akses halaman   | Status Terapis        |
+|   |                    | Admin Dashboard    | berubah menjadi       |
+|   |                    |                    | "Rejected"            |
+|   |                    | \- Pilih Terapis   |                       |
+|   |                    | pending            |                       |
+|   |                    |                    |                       |
+|   |                    | \- Klik tombol Tolak|                       |
++---+--------------------+--------------------+-----------------------+
+| 3 | Lihat Statistik    | \- Akses halaman   | Sistem menampilkan    |
+|   | Klinik             | utama Admin        | ringkasan statistik   |
+|   |                    |                    | pendaftaran dan       |
+|   |                    | \- Lihat grafik /  | aktivitas klinik      |
+|   |                    | ringkasan data     |                       |
++---+--------------------+--------------------+-----------------------+
+
+Tabel 3.12 menyajikan rancangan pengujian untuk fitur-fitur khusus Admin
+pada sistem PhysioNet. Pengujian ini difokuskan pada validasi alur kerja
+manajerial yang mencakup proses verifikasi dan penolakan akun Terapis
+guna menjaga integritas pengguna sistem, serta pengujian tampilan
+statistik klinik untuk mendukung pengambilan keputusan oleh pihak
+manajemen klinik.

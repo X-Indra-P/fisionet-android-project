@@ -164,6 +164,10 @@ rekam medis secara instan di lokasi tindakan, sekaligus mengatasi
 keterbatasan aksesibilitas dan mobilitas yang sering ditemui pada sistem
 manajemen pasien berbasis *desktop* maupun pencatatan manual.
 
+## Physionet
+
+PhysioNet merupakan klinik fisioterapi mandiri yang telah berdiri sejak tahun 2010. Mengawali operasionalnya di Jalan Raya Sesetan No. 26, Denpasar Selatan, PhysioNet terus berkembang hingga berhasil membuka cabang kedua pada tahun 2025 yang berlokasi di Jalan Pulau Batanta No. 84, Dauh Puri Kauh. Saat ini, pelayanan di klinik utama didukung oleh 2 orang terapis profesional, sementara klinik cabang diperkuat oleh 3 orang terapis untuk memastikan kualitas layanan yang optimal bagi pasien.
+
 ## Fisioterapi
 
 Fisioterapi adalah profesi kesehatan yang berfokus pada pengoptimalan
