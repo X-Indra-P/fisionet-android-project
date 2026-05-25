@@ -11,6 +11,7 @@ data class Transaction(
     val package_id: Int? = null, // New field
     val total_amount: Double,
     val payment_status: String? = "pending", // Payment status (pending, success, failed, etc)
+    val xendit_id: String? = null, // Xendit Invoice ID for status checking
     val user_id: String? = null,
     val user_name: String? = null, // Restored for display
     val cabang: String? = null, // New field for branch

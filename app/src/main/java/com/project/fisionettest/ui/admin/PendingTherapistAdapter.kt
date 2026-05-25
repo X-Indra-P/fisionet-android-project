@@ -16,8 +16,10 @@ class PendingTherapistAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(profile: Profile) {
-            binding.tvName.text = profile.displayName ?: "Tanpa Nama"
-            binding.tvStatus.text = "Status: ${profile.status}"
+            val name = profile.displayName ?: "Tanpa Nama"
+            binding.tvName.text = name
+            binding.tvAvatarInitial.text = name.firstOrNull()?.uppercaseChar()?.toString() ?: "T"
+            binding.chipStatus.text = "Menunggu Verifikasi"
 
             binding.btnApprove.setOnClickListener {
                 onApprove(profile)

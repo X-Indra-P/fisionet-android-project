@@ -163,7 +163,9 @@
         android:id="@+id/cashierFragment"
         android:name="com.project.fisionettest.ui.cashier.CashierFragment"
         android:label="Tambah Transaksi">
-        <!-- History action no longer needed from here, but keeping valid ID ref just in case -->
+        <action
+            android:id="@+id/action_cashierFragment_to_transactionHistoryFragment"
+            app:destination="@id/transactionHistoryFragment" />
     </fragment>
 
     <fragment

@@ -76,4 +76,17 @@ class AdminRepository {
             }
         }
     }
+    suspend fun transferBranch(userId: String, newClinic: String) {
+        withContext(Dispatchers.IO) {
+            SupabaseClient.client.from("profiles").update(
+                {
+                    set("clinic", newClinic)
+                }
+            ) {
+                filter {
+                    eq("id", userId)
+                }
+            }
+        }
+    }
 }

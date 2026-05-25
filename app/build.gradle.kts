@@ -57,8 +57,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.recyclerview)
 
-    // Midtrans SDK
-    implementation("com.midtrans:uikit:2.0.0-SANDBOX")
+
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

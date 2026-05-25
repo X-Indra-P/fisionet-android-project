@@ -13,6 +13,7 @@ import com.project.fisionettest.databinding.FragmentAdminDashboardBinding
 import com.google.android.material.tabs.TabLayoutMediator
 import io.github.jan.supabase.gotrue.auth
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 class AdminDashboardFragment : Fragment() {
 
@@ -31,6 +32,7 @@ class AdminDashboardFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setupAdminHeader()
         setupViewPager()
 
         binding.btnLogout.setOnClickListener {
@@ -41,14 +43,32 @@ class AdminDashboardFragment : Fragment() {
         }
     }
 
+    private fun setupAdminHeader() {
+        val user = SupabaseClient.client.auth.currentUserOrNull()
+        if (user != null) {
+            val metadata = user.userMetadata
+            var displayName = user.email
+                ?.substringBefore("@")
+                ?.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+                ?: "Admin"
+
+            if (metadata != null && metadata.containsKey("display_name")) {
+                displayName = metadata["display_name"].toString().replace("\"", "")
+            }
+
+            binding.tvAdminName.text = displayName
+            binding.tvAvatarInitial.text = displayName.firstOrNull()?.uppercaseChar()?.toString() ?: "A"
+        }
+    }
+
     private fun setupViewPager() {
         val adapter = AdminPagerAdapter(this)
         binding.viewPager.adapter = adapter
 
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
             tab.text = when (position) {
-                0 -> "Menunggu"
-                1 -> "Disetujui"
+                0 -> "⏳  Menunggu"
+                1 -> "✅  Disetujui"
                 else -> ""
             }
         }.attach()
