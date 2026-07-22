@@ -39,20 +39,21 @@ class TransactionAdapter(private val onItemClick: (Transaction) -> Unit) :
 
             binding.tvDate.text = transaction.date
             binding.tvPatientName.text = transaction.patients?.name ?: "Pasien tidak ditemukan"
-            binding.tvPackageName.text = transaction.packages?.name ?: "-"
+            binding.tvPackageName.text = transaction.cabang_package?.packages?.name ?: "-"
             binding.tvAmount.text = format.format(transaction.total_amount)
 
             // Therapist name
-            if (!transaction.user_name.isNullOrBlank()) {
-                binding.tvUserName.text = "Oleh: ${transaction.user_name}"
+            val therapistName = transaction.profiles?.displayName
+            if (!therapistName.isNullOrBlank()) {
+                binding.tvUserName.text = "Oleh: $therapistName"
                 binding.tvUserName.visibility = View.VISIBLE
             } else {
                 binding.tvUserName.visibility = View.GONE
             }
 
             // Cabang
-            if (!transaction.cabang.isNullOrBlank()) {
-                binding.tvCabang.text = transaction.cabang
+            if (transaction.id_cabang != null) {
+                binding.tvCabang.text = com.project.fisionettest.utils.ClinicMapper.toName(transaction.id_cabang)
                 binding.tvCabang.visibility = View.VISIBLE
             } else {
                 binding.tvCabang.visibility = View.GONE

@@ -10,7 +10,15 @@ data class Profile(
     val displayName: String? = null,
     val role: Int = 2, // 1 = Admin, 2 = Therapist
     val status: String = "pending", // pending, verified, rejected
-    val clinic: String? = null,
+    val id_cabang: Int? = null,
     @SerialName("created_at")
-    val createdAt: String? = null
+    val createdAt: String? = null,
+    @SerialName("avatar_url")
+    val avatarUrl: String? = null,
+    @SerialName("place_of_birth")
+    val placeOfBirth: String? = null,
+    @SerialName("date_of_birth")
+    val dateOfBirth: String? = null,
+    val phone: String? = null,
+    val address: String? = null
 )

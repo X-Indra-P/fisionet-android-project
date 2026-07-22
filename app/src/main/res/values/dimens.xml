@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Default padding & margins for phones -->
+    <dimen name="layout_margin_horizontal">16dp</dimen>
+    <dimen name="form_margin_horizontal">20dp</dimen>
+    <dimen name="header_padding_horizontal">20dp</dimen>
+    <dimen name="dashboard_padding_top">48dp</dimen>
+    <dimen name="dashboard_padding_bottom">24dp</dimen>
+    <dimen name="diagnosis_box_height">280dp</dimen>
+</resources>

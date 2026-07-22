@@ -12,5 +12,7 @@ data class Patient(
     val phone: String? = null,
     val address: String? = null,
     val gender: String? = null, // "L" or "P"
-    val notes: String? = null
+    val notes: String? = null,
+    val profile_id: String? = null,
+    val profiles: Profile? = null
 )

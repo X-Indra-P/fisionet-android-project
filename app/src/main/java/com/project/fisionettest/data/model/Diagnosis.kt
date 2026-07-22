@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
 
 @Serializable
-@SerialName("diagnosis") // Ensures it maps to 'diagnosis' table if using library features looking for name, though usually explicit
+@SerialName("diagnosis")
 data class Diagnosis(
     val id: Int? = null,
     val created_at: String? = null,
@@ -13,6 +13,11 @@ data class Diagnosis(
     val vital_sign: String,
     val patient_problem: String,
     val inspection: String,
-    val planning: String,
-    val date: String
+    val date: String,
+    val profile_id: String? = null,
+    val id_cabang: Int? = null,
+    val cabang_package_id: Int? = null,
+    val cabang_package: CabangPackage? = null,
+    val profiles: Profile? = null,
+    val status: String? = "Proses"
 )

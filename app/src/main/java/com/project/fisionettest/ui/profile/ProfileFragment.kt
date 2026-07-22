@@ -13,9 +13,15 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.project.fisionettest.R
 import com.project.fisionettest.data.SupabaseClient
 import com.project.fisionettest.databinding.FragmentProfileBinding
+import com.project.fisionettest.utils.AppPreferences
 import io.github.jan.supabase.gotrue.auth
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.put
+import coil.load
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import io.github.jan.supabase.postgrest.from
+import com.project.fisionettest.data.model.Profile
 
 class ProfileFragment : Fragment() {
     private var _binding: FragmentProfileBinding? = null
@@ -36,7 +42,7 @@ class ProfileFragment : Fragment() {
         loadUserProfile()
 
         binding.btnEditProfile.setOnClickListener {
-            showEditProfileDialog()
+            findNavController().navigate(R.id.action_profile_to_therapist_profile)
         }
 
         binding.btnChangePassword.setOnClickListener {
@@ -111,10 +117,10 @@ class ProfileFragment : Fragment() {
             .setView(inputLayout)
             .setPositiveButton("Simpan") { _, _ ->
                 val newPass = input.text.toString()
-                if (newPass.length >= 6) {
+                if (newPass.length >= 8) {
                     updatePassword(newPass)
                 } else {
-                    Toast.makeText(context, "Password minimal 6 karakter", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Password minimal 8 karakter", Toast.LENGTH_SHORT).show()
                 }
             }
             .setNegativeButton("Batal", null)
@@ -140,14 +146,35 @@ class ProfileFragment : Fragment() {
                 val user = SupabaseClient.client.auth.currentUserOrNull()
                 if (user != null) {
                     binding.tvEmail.text = user.email
-                    
-                    // Try to get display name from user metadata
-                    val metadata = user.userMetadata
-                    var displayName = "User"
-                    if (metadata != null && metadata.containsKey("display_name")) {
-                         displayName = metadata["display_name"].toString().replace("\"", "")
+
+                    val userId = AppPreferences(requireContext()).userId ?: ""
+                    if (userId.isNotEmpty()) {
+                        val profile = withContext(Dispatchers.IO) {
+                            SupabaseClient.client.from("profiles")
+                                .select {
+                                    filter {
+                                        eq("id", userId)
+                                    }
+                                }.decodeSingleOrNull<Profile>()
+                        }
+                        if (profile != null) {
+                            binding.tvDisplayName.text = profile.displayName ?: "User"
+                            if (!profile.avatarUrl.isNullOrEmpty()) {
+                                binding.ivProfile.load(profile.avatarUrl) {
+                                    placeholder(R.drawable.ic_launcher_foreground)
+                                    error(R.drawable.ic_launcher_foreground)
+                                    transformations(coil.transform.CircleCropTransformation())
+                                }
+                            }
+                        } else {
+                            val metadata = user.userMetadata
+                            var displayName = "User"
+                            if (metadata != null && metadata.containsKey("display_name")) {
+                                displayName = metadata["display_name"].toString().replace("\"", "")
+                            }
+                            binding.tvDisplayName.text = displayName
+                        }
                     }
-                    binding.tvDisplayName.text = displayName
                 } else {
                     binding.tvEmail.text = "-"
                     binding.tvDisplayName.text = "Tamu"
@@ -173,6 +200,8 @@ class ProfileFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             try {
                 SupabaseClient.client.auth.signOut()
+                // Hapus data sesi lokal (clinic, userId, dll)
+                AppPreferences(requireContext()).clearSession()
                 Toast.makeText(requireContext(), "Logout berhasil", Toast.LENGTH_SHORT).show()
                 findNavController().navigate(R.id.action_profile_to_login)
             } catch (e: Exception) {

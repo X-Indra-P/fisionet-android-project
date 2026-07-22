@@ -51,85 +51,137 @@
             android:text="Tanggal: -"
             android:textSize="14sp"
             android:layout_marginBottom="16dp" />
-
         <!-- Read Mode Layout (Default) -->
-        <LinearLayout
+        <com.google.android.material.card.MaterialCardView
             android:id="@+id/layout_read_mode"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="2dp"
+            app:cardBackgroundColor="@color/white"
+            app:strokeWidth="1dp"
+            app:strokeColor="#E9ECEF"
             android:visibility="visible">
 
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Diagnosis"
-                android:textStyle="bold"
-                android:layout_marginBottom="4dp" />
-            <TextView
-                android:id="@+id/tv_read_diagnosis"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="-"
-                android:layout_marginBottom="16dp"
-                android:textSize="16sp" />
+                android:orientation="vertical"
+                android:padding="16dp">
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Vital Sign"
-                android:textStyle="bold"
-                android:layout_marginBottom="4dp" />
-            <TextView
-                android:id="@+id/tv_read_vital_sign"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="-"
-                android:layout_marginBottom="16dp"
-                android:textSize="16sp" />
+                <!-- Row 1: Diagnosis -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginBottom="10dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Diagnosis"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="12sp"
+                        android:textStyle="bold"/>
+                    <TextView
+                        android:id="@+id/tv_read_diagnosis"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="-"
+                        android:textColor="@color/text_primary"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Patient Problem"
-                android:textStyle="bold"
-                android:layout_marginBottom="4dp" />
-            <TextView
-                android:id="@+id/tv_read_patient_problem"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="-"
-                android:layout_marginBottom="16dp"
-                android:textSize="16sp" />
+                <!-- Row 2: Vital Sign -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginBottom="10dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Vital Sign"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="12sp"
+                        android:textStyle="bold"/>
+                    <TextView
+                        android:id="@+id/tv_read_vital_sign"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="-"
+                        android:textColor="@color/text_primary"
+                        android:textSize="14sp" />
+                </LinearLayout>
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Inspection"
-                android:textStyle="bold"
-                android:layout_marginBottom="4dp" />
-            <TextView
-                android:id="@+id/tv_read_inspection"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="-"
-                android:layout_marginBottom="16dp"
-                android:textSize="16sp" />
+                <!-- Row 3: Patient Problem -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginBottom="10dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Patient Problem"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="12sp"
+                        android:textStyle="bold"/>
+                    <TextView
+                        android:id="@+id/tv_read_patient_problem"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="-"
+                        android:textColor="@color/text_primary"
+                        android:textSize="14sp" />
+                </LinearLayout>
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Planning"
-                android:textStyle="bold"
-                android:layout_marginBottom="4dp" />
-            <TextView
-                android:id="@+id/tv_read_planning"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="-"
-                android:layout_marginBottom="24dp"
-                android:textSize="16sp" />
-        </LinearLayout>
+                <!-- Row 4: Inspection -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginBottom="10dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Inspection"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="12sp"
+                        android:textStyle="bold"/>
+                    <TextView
+                        android:id="@+id/tv_read_inspection"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="-"
+                        android:textColor="@color/text_primary"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+                <!-- Row 5: Planning -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Planning"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="12sp"
+                        android:textStyle="bold"/>
+                    <TextView
+                        android:id="@+id/tv_read_planning"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="-"
+                        android:textColor="@color/text_primary"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
         <!-- Edit Mode Layout (Hidden by Default) -->
         <LinearLayout
@@ -239,6 +291,19 @@
                 android:backgroundTint="@android:color/holo_red_light" />
         </LinearLayout>
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_serve_session"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_marginTop="16dp"
+            android:text="Layani Pasien (Sesi Baru)"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/primary_blue"
+            app:cornerRadius="8dp"
+            android:visibility="visible"/>
+
     </LinearLayout>
 
     <View
@@ -247,28 +312,107 @@
         android:background="#E0E0E0"
         android:layout_marginBottom="16dp" />
 
-    <LinearLayout
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginBottom="16dp">
+        android:text="Perkembangan Pasien"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:layout_marginBottom="16dp" />
 
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Perkembangan Pasien"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+    <!-- Active Session Card (Hidden by default) -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cv_active_session"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        app:cardElevation="6dp"
+        app:cardCornerRadius="12dp"
+        app:strokeColor="#FF9800"
+        app:strokeWidth="1.5dp"
+        app:cardBackgroundColor="#FFF3E0"
+        android:visibility="gone">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_add_progress"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="16dp"
-            android:text="Tambah"
-            style="@style/Widget.Material3.Button.TextButton" />
-    </LinearLayout>
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Active Header -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="12dp">
+
+                <TextView
+                    android:id="@+id/tv_active_date"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Tanggal: -"
+                    android:textStyle="bold"
+                    android:textColor="@color/black"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Sedang Dilayani"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:paddingTop="6dp"
+                    android:paddingBottom="6dp"
+                    android:background="@drawable/bg_badge_inactive"
+                    android:textColor="@color/white" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tv_active_package_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Paket Terapi: -"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:textSize="15sp"
+                android:layout_marginBottom="4dp"/>
+
+            <TextView
+                android:id="@+id/tv_active_tools"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Alat Terapi: -"
+                android:textColor="@color/text_secondary"
+                android:textSize="13sp"
+                android:layout_marginBottom="12dp"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_pay_active_session"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:text="Pembayaran"
+                android:textColor="@color/white"
+                android:backgroundTint="#4CAF50"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                app:cornerRadius="8dp"/>
+
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <ProgressBar
+        android:id="@+id/pb_loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:visibility="gone" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_patient_progress"

@@ -6,78 +6,121 @@
     android:layout_marginHorizontal="16dp"
     android:layout_marginVertical="6dp"
     app:cardCornerRadius="16dp"
-    app:cardElevation="3dp"
+    app:cardElevation="2dp"
     app:strokeColor="#E8EAF6"
     app:strokeWidth="1dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- Avatar -->
-        <FrameLayout
-            android:layout_width="44dp"
-            android:layout_height="44dp"
-            android:background="@drawable/shape_avatar_circle">
-
-            <TextView
-                android:id="@+id/tvAvatarInitial"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:text="T"
-                android:textColor="@android:color/white"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-        </FrameLayout>
-
-        <!-- Name + Clinic Chip -->
+        <!-- Row 1: Avatar + Nama + Cabang -->
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
 
+            <!-- Avatar circle -->
+            <FrameLayout
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:background="@drawable/shape_avatar_circle">
+
+                <TextView
+                    android:id="@+id/tvAvatarInitial"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="T"
+                    android:textColor="@android:color/white"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+            </FrameLayout>
+
+            <!-- Nama + Cabang -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Nama Terapis"
+                    android:textColor="#1A237E"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipClinic"
+                    android:layout_width="wrap_content"
+                    android:layout_height="28dp"
+                    android:layout_marginTop="4dp"
+                    android:text="Cabang 1"
+                    android:textSize="11sp"
+                    android:textColor="#3949AB"
+                    app:chipBackgroundColor="#E8EAF6"
+                    app:chipStrokeWidth="0dp"
+                    app:chipMinHeight="26dp"
+                    style="@style/Widget.MaterialComponents.Chip.Choice" />
+            </LinearLayout>
+
+            <!-- Badge Status (active / inactive) -->
             <TextView
-                android:id="@+id/tvName"
+                android:id="@+id/tv_status_badge"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Nama Terapis"
-                android:textColor="#1A237E"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipClinic"
-                android:layout_width="wrap_content"
-                android:layout_height="30dp"
-                android:layout_marginTop="4dp"
-                android:text="Cabang 1"
+                android:text="Aktif"
                 android:textSize="11sp"
-                app:chipBackgroundColor="#E8EAF6"
-                app:chipStrokeWidth="0dp"
-                android:textColor="#3949AB"
-                app:chipMinHeight="26dp"
-                style="@style/Widget.MaterialComponents.Chip.Choice" />
-
+                android:textStyle="bold"
+                android:textColor="@android:color/white"
+                android:background="@drawable/bg_badge_active"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp" />
         </LinearLayout>
 
-        <!-- Transfer Branch Button -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnTransferBranch"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_width="wrap_content"
+        <!-- Row 2: Tombol aksi -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Pindah\nCabang"
-            android:textSize="11sp"
-            android:textColor="#1A237E"
-            app:strokeColor="#1A237E"
-            app:cornerRadius="10dp" />
+            android:orientation="horizontal"
+            android:layout_marginTop="12dp"
+            android:gravity="end">
 
+            <!-- Pindah Cabang -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnTransferBranch"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:text="Pindah Cabang"
+                android:textSize="12sp"
+                android:textAllCaps="false"
+                android:textColor="#1A237E"
+                android:layout_marginEnd="8dp"
+                app:strokeColor="#1A237E"
+                app:cornerRadius="10dp" />
+
+            <!-- Nonaktifkan / Aktifkan -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_toggle_status"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:text="Nonaktifkan"
+                android:textSize="12sp"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                android:backgroundTint="#E53935"
+                app:cornerRadius="10dp" />
+        </LinearLayout>
     </LinearLayout>
 
 </com.google.android.material.card.MaterialCardView>

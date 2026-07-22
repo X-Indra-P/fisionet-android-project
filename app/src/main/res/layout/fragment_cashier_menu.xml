@@ -162,72 +162,7 @@
 
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Card: Kelola Paket -->
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cardAddPackage"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="14dp"
-                android:clickable="true"
-                android:focusable="true"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="0dp"
-                app:strokeWidth="0dp"
-                app:cardBackgroundColor="@color/white">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="20dp"
-                    android:gravity="center_vertical">
-
-                    <FrameLayout
-                        android:layout_width="52dp"
-                        android:layout_height="52dp"
-                        android:background="@drawable/bg_icon_container_green"
-                        android:layout_marginEnd="16dp">
-                        <ImageView
-                            android:layout_width="26dp"
-                            android:layout_height="26dp"
-                            android:layout_gravity="center"
-                            android:src="@android:drawable/ic_menu_agenda"
-                            app:tint="#388E3C"
-                            android:contentDescription="Paket"/>
-                    </FrameLayout>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Kelola Paket Terapi"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/text_primary"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Tambah &amp; edit paket layanan"
-                            android:textSize="13sp"
-                            android:textColor="@color/text_secondary"
-                            android:layout_marginTop="2dp"/>
-                    </LinearLayout>
-
-                    <ImageView
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
-                        android:src="@android:drawable/ic_media_play"
-                        app:tint="#388E3C"
-                        android:contentDescription="Buka"/>
-                </LinearLayout>
-
-            </com.google.android.material.card.MaterialCardView>
 
             <!-- Card: Riwayat Transaksi -->
             <com.google.android.material.card.MaterialCardView

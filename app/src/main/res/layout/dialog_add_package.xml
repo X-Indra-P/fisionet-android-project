@@ -49,6 +49,32 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="Cabang Penugasan:"
+            android:layout_marginBottom="8dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="16dp">
+
+            <CheckBox
+                android:id="@+id/cb_cabang_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Cabang 1"
+                android:layout_marginEnd="16dp" />
+
+            <CheckBox
+                android:id="@+id/cb_cabang_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Cabang 2" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:text="Alat yang digunakan:"
             android:layout_marginBottom="8dp"/>
 
@@ -57,15 +83,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-            <!-- Dynamic Tool Inputs will be added here -->
+            <!-- Dynamic Tool Checkboxes will be added here -->
         </LinearLayout>
-        
-        <Button
-            android:id="@+id/btn_add_tool"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="+ Tambah Alat"
-            style="@style/Widget.MaterialComponents.Button.TextButton"/>
 
         <LinearLayout
             android:layout_width="match_parent"

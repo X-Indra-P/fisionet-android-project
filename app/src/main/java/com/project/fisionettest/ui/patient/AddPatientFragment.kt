@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.project.fisionettest.R
 import com.project.fisionettest.data.SupabaseClient
 import com.project.fisionettest.data.model.Patient
 import com.project.fisionettest.databinding.FragmentAddPatientBinding
@@ -17,6 +18,7 @@ import io.github.jan.supabase.postgrest.from
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
+import com.project.fisionettest.utils.AppPreferences
 
 class AddPatientFragment : Fragment() {
     private var _binding: FragmentAddPatientBinding? = null
@@ -92,11 +94,52 @@ class AddPatientFragment : Fragment() {
                     put("phone", phone.ifBlank { null })
                     put("address", address.ifBlank { null })
                     put("gender", binding.etGender.text.toString().substring(0, 1)) // "Laki-laki" -> "L", "Perempuan" -> "P"
+                    put("profile_id", com.project.fisionettest.data.SupabaseClient.client.auth.currentUserOrNull()?.id)
                 }
 
-                SupabaseClient.client.from("patients").insert(patientData)
-                Toast.makeText(requireContext(), "Pasien berhasil ditambahkan", Toast.LENGTH_SHORT).show()
-                findNavController().popBackStack()
+                 val inserted = SupabaseClient.client.from("patients")
+                    .insert(patientData) { select() }
+                    .decodeSingle<Patient>()
+
+                  // Show success dialog
+                  val successDialog = androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                     .setView(R.layout.dialog_payment_status)
+                     .setCancelable(false)
+                     .create()
+                  successDialog.show()
+                  successDialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+                  val pbLoading = successDialog.findViewById<android.widget.ProgressBar>(R.id.pb_loading)
+                  val ivStatusIcon = successDialog.findViewById<android.widget.ImageView>(R.id.iv_status_icon)
+                  val tvStatusTitle = successDialog.findViewById<android.widget.TextView>(R.id.tv_status_title)
+                  val tvStatusMessage = successDialog.findViewById<android.widget.TextView>(R.id.tv_status_message)
+
+                  pbLoading?.visibility = View.GONE
+                  ivStatusIcon?.visibility = View.VISIBLE
+                  ivStatusIcon?.setImageResource(android.R.drawable.checkbox_on_background)
+                  ivStatusIcon?.imageTintList = android.content.res.ColorStateList.valueOf(
+                      androidx.core.content.ContextCompat.getColor(requireContext(), R.color.status_present)
+                  )
+                  tvStatusTitle?.text = "Pasien Berhasil Ditambahkan"
+                  tvStatusMessage?.text = "Mengalihkan ke pengisian diagnosis pasien..."
+
+                  // Delay for 3 seconds
+                  kotlinx.coroutines.delay(3000)
+                  successDialog.dismiss()
+
+                  val bundle = Bundle().apply {
+                      putInt("patientId", inserted.id ?: 0)
+                  }
+
+                  findNavController().navigate(
+                      R.id.action_addPatientFragment_to_addDiagnosisFragment,
+                      bundle,
+                      androidx.navigation.navOptions {
+                          popUpTo(R.id.addPatientFragment) {
+                              inclusive = true
+                          }
+                      }
+                  )
             } catch (e: Exception) {
                 Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_LONG).show()
             } finally {

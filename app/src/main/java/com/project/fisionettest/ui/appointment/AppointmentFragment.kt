@@ -1,6 +1,7 @@
 package com.project.fisionettest.ui.appointment
 
 import android.os.Bundle
+import com.project.fisionettest.R
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +12,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.project.fisionettest.data.SupabaseClient
 import com.project.fisionettest.data.model.Appointment
 import com.project.fisionettest.databinding.FragmentAppointmentBinding
+import com.project.fisionettest.utils.AppPreferences
+import androidx.navigation.fragment.findNavController
 import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.postgrest.query.Columns
@@ -23,6 +26,7 @@ class AppointmentFragment : Fragment() {
     private var _binding: FragmentAppointmentBinding? = null
     private val binding get() = _binding!!
     private lateinit var appointmentAdapter: AppointmentAdapter
+    private lateinit var prefs: AppPreferences
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -35,19 +39,34 @@ class AppointmentFragment : Fragment() {
 
     private var allAppointments: List<Appointment> = emptyList()
     private var filteredDate: String? = null
+    private var selectedStatusFilter: String = "Semua"
     private var patientList: List<com.project.fisionettest.data.model.Patient> = emptyList()
     private var selectedPatient: com.project.fisionettest.data.model.Patient? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        prefs = AppPreferences(requireContext())
 
         setupRecyclerView()
         setupFilter()
+        setupStatusFilter()
         loadAppointments()
-        loadPatients() // Fetch patients for dropdown
+        loadPatients()
 
         binding.fabAddAppointment.setOnClickListener {
             showAddAppointmentDialog()
+        }
+    }
+
+    private fun setupStatusFilter() {
+        binding.chipGroupStatus?.setOnCheckedStateChangeListener { group, checkedIds ->
+            selectedStatusFilter = when (checkedIds.firstOrNull()) {
+                R.id.chip_upcoming -> "Akan Datang"
+                R.id.chip_completed -> "Selesai"
+                R.id.chip_no_show -> "Tidak Hadir"
+                else -> "Semua"
+            }
+            filterAppointments()
         }
     }
 
@@ -82,14 +101,21 @@ class AppointmentFragment : Fragment() {
     }
 
     private fun filterAppointments() {
-        val list = if (filteredDate == null) {
+        var list = if (filteredDate == null) {
             allAppointments
         } else {
             allAppointments.filter { it.date == filteredDate }
         }
+
+        list = when (selectedStatusFilter) {
+            "Akan Datang" -> list.filter { it.status == "Terjadwal" }
+            "Selesai" -> list.filter { it.status == "Selesai" }
+            "Tidak Hadir" -> list.filter { it.status == "Dibatalkan" }
+            else -> list
+        }
+
         appointmentAdapter.submitList(list)
-        
-        binding.tvEmpty.text = "Tidak ada appointment yang ditemukan"
+
         binding.tvEmpty.visibility = if (list.isEmpty()) View.VISIBLE else View.GONE
         binding.rvAppointments.visibility = if (list.isEmpty()) View.GONE else View.VISIBLE
     }
@@ -103,13 +129,30 @@ class AppointmentFragment : Fragment() {
         appointmentAdapter.onItemClick = { appointment ->
             showStatusDialog(appointment)
         }
+        appointmentAdapter.onServeClick = { appointment ->
+            val pId = appointment.patient_id ?: 0
+            if (pId > 0) {
+                val prefs = com.project.fisionettest.utils.AppPreferences(requireContext())
+                prefs.activeAppointmentId = appointment.id ?: -1
+                val bundle = Bundle().apply {
+                    putInt("patientId", pId)
+                }
+                findNavController().navigate(R.id.patientDetailFragment, bundle)
+            } else {
+                android.widget.Toast.makeText(requireContext(), "ID Pasien tidak valid", android.widget.Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     private fun loadAppointments() {
         viewLifecycleOwner.lifecycleScope.launch {
+            binding.pbLoading.visibility = View.VISIBLE
+            binding.tvEmpty.visibility = View.GONE
+            binding.rvAppointments.visibility = View.GONE
             try {
-                // Order by date descending (newest first)
-                allAppointments = SupabaseClient.client.from("appointments").select {
+                SupabaseClient.autoMarkPastAppointmentsAsMissed()
+                // Fetch all appointments for the therapist to see
+                allAppointments = SupabaseClient.client.from("appointments").select(columns = Columns.raw("*, patients(*), profiles(*)")) {
                     order("date", io.github.jan.supabase.postgrest.query.Order.DESCENDING)
                     order("time", io.github.jan.supabase.postgrest.query.Order.ASCENDING)
                 }.decodeList<Appointment>()
@@ -117,9 +160,10 @@ class AppointmentFragment : Fragment() {
                 filterAppointments()
             } catch (e: Exception) {
                 e.printStackTrace()
-                binding.tvEmpty.text = "Error memuat data: ${e.message}"
                 binding.tvEmpty.visibility = View.VISIBLE
                 binding.rvAppointments.visibility = View.GONE
+            } finally {
+                binding.pbLoading.visibility = View.GONE
             }
         }
     }
@@ -134,19 +178,14 @@ class AppointmentFragment : Fragment() {
         var selectedDate: String? = null
         var selectedTime: String? = null
         
-        // Setup Patient Spinner
+        // Setup Patient AutoCompleteTextView for Search
         val patientNames = patientList.map { it.name }
-        val adapter = android.widget.ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, patientNames)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        dialogBinding.spinnerPatient.adapter = adapter
+        val adapter = android.widget.ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, patientNames)
+        dialogBinding.actPatient.setAdapter(adapter)
         
-        dialogBinding.spinnerPatient.onItemSelectedListener = object : android.widget.AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: android.widget.AdapterView<*>?, view: View?, position: Int, id: Long) {
-                selectedPatient = patientList.getOrNull(position)
-            }
-            override fun onNothingSelected(parent: android.widget.AdapterView<*>?) {
-                selectedPatient = null
-            }
+        dialogBinding.actPatient.setOnItemClickListener { parent, view, position, id ->
+            val selectedName = parent.getItemAtPosition(position).toString()
+            selectedPatient = patientList.find { it.name == selectedName }
         }
 
         dialogBinding.etDate.setOnClickListener {
@@ -167,20 +206,32 @@ class AppointmentFragment : Fragment() {
 
         dialogBinding.btnSave.setOnClickListener {
             val notes = dialogBinding.etNotes.text.toString()
+            val typedName = dialogBinding.actPatient.text.toString()
+            selectedPatient = patientList.find { it.name.equals(typedName, ignoreCase = true) }
 
-            if (selectedPatient != null && selectedDate != null && selectedTime != null) {
-                lifecycleScope.launch {
+            if (selectedPatient == null) {
+                android.widget.Toast.makeText(requireContext(), "Silakan pilih pasien yang terdaftar", android.widget.Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            if (selectedDate == null || selectedTime == null) {
+                android.widget.Toast.makeText(requireContext(), "Silakan isi tanggal dan waktu", android.widget.Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            lifecycleScope.launch {
                     try {
                         // Auth user id no longer needed for appointment creation
                         val dbStatus = "Terjadwal"
-
                         val newAppointment = kotlinx.serialization.json.buildJsonObject {
                             put("patient_id", selectedPatient?.id)
-                            put("patient_name", selectedPatient!!.name)
                             put("date", selectedDate!!)
                             put("time", selectedTime!!)
-                            put("status", dbStatus)
+                            put("status", "Terjadwal")
                             put("notes", if (notes.isBlank()) null else notes)
+                            // Auto-assign therapist via profile_id
+                            val user = SupabaseClient.client.auth.currentUserOrNull()
+                            put("profile_id", user?.id)
                         }
                         SupabaseClient.client.from("appointments").insert(newAppointment)
                         loadAppointments()
@@ -193,9 +244,6 @@ class AppointmentFragment : Fragment() {
                             .show()
                         e.printStackTrace()
                     }
-                }
-            } else {
-                android.widget.Toast.makeText(requireContext(), "Mohon pilih pasien dan lengkapi data", android.widget.Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -241,26 +289,22 @@ class AppointmentFragment : Fragment() {
         var selectedDate: String? = appointment.date
         var selectedTime: String? = appointment.time
         
-        // Setup Patient Spinner
+        // Setup Patient AutoCompleteTextView for Search
         val patientNames = patientList.map { it.name }
-        val adapter = android.widget.ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, patientNames)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        dialogBinding.spinnerPatient.adapter = adapter
+        val adapter = android.widget.ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, patientNames)
+        dialogBinding.actPatient.setAdapter(adapter)
         
         // Determine selected patient index
-        val currentPatientIndex = patientList.indexOfFirst { it.name == appointment.patient_name }
+        val patientName = appointment.patients?.name ?: ""
+        val currentPatientIndex = patientList.indexOfFirst { it.name == patientName }
         if (currentPatientIndex != -1) {
-            dialogBinding.spinnerPatient.setSelection(currentPatientIndex)
+            dialogBinding.actPatient.setText(patientName, false)
             selectedPatient = patientList[currentPatientIndex]
         }
         
-        dialogBinding.spinnerPatient.onItemSelectedListener = object : android.widget.AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: android.widget.AdapterView<*>?, view: View?, position: Int, id: Long) {
-                selectedPatient = patientList.getOrNull(position)
-            }
-            override fun onNothingSelected(parent: android.widget.AdapterView<*>?) {
-                // Keep previous selection if possible or null
-            }
+        dialogBinding.actPatient.setOnItemClickListener { parent, view, position, id ->
+            val selectedName = parent.getItemAtPosition(position).toString()
+            selectedPatient = patientList.find { it.name == selectedName }
         }
 
         // Fill existing data
@@ -287,13 +331,23 @@ class AppointmentFragment : Fragment() {
 
         dialogBinding.btnSave.setOnClickListener {
             val notes = dialogBinding.etNotes.text.toString()
+            val typedName = dialogBinding.actPatient.text.toString()
+            selectedPatient = patientList.find { it.name.equals(typedName, ignoreCase = true) }
 
-            if (selectedPatient != null && selectedDate != null && selectedTime != null) {
-                lifecycleScope.launch {
+            if (selectedPatient == null) {
+                android.widget.Toast.makeText(requireContext(), "Silakan pilih pasien yang terdaftar", android.widget.Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            if (selectedDate == null || selectedTime == null) {
+                android.widget.Toast.makeText(requireContext(), "Silakan isi tanggal dan waktu", android.widget.Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            lifecycleScope.launch {
                     try {
                         val updatedAppointment = appointment.copy(
                             patient_id = selectedPatient?.id,
-                            patient_name = selectedPatient!!.name,
                             date = selectedDate!!,
                             time = selectedTime!!,
                             notes = if (notes.isBlank()) null else notes
@@ -309,9 +363,6 @@ class AppointmentFragment : Fragment() {
                     } catch (e: Exception) {
                         android.widget.Toast.makeText(requireContext(), "Gagal Update: ${e.message}", android.widget.Toast.LENGTH_SHORT).show()
                     }
-                }
-            } else {
-                android.widget.Toast.makeText(requireContext(), "Semua data harus diisi", android.widget.Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -325,7 +376,7 @@ class AppointmentFragment : Fragment() {
     private fun confirmDelete(appointment: Appointment) {
         MaterialAlertDialogBuilder(requireContext())
             .setTitle("Hapus Appointment")
-            .setMessage("Apakah Anda yakin ingin menghapus appointment untuk ${appointment.patient_name}?")
+            .setMessage("Apakah Anda yakin ingin menghapus appointment untuk ${appointment.patients?.name ?: "Pasien"}?")
             .setPositiveButton("Hapus") { _, _ ->
                 deleteAppointment(appointment)
             }

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingVertical="12dp"
+    android:gravity="center_vertical">
+
+    <!-- Month & Year -->
+    <TextView
+        android:id="@+id/tv_stat_month"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1.2"
+        android:text="Januari 2026"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:textColor="#212121" />
+
+    <!-- Revenue & Trx Count Container -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="end">
+
+        <!-- Revenue -->
+        <TextView
+            android:id="@+id/tv_stat_revenue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Rp 0"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="#2E7D32" />
+
+        <!-- Trx Count -->
+        <TextView
+            android:id="@+id/tv_stat_trx_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0 transaksi"
+            android:textSize="11sp"
+            android:textColor="#757575"
+            android:layout_marginTop="2dp" />
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -13,22 +13,81 @@
         android:orientation="vertical"
         android:padding="12dp">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="4dp">
+
+            <TextView
+                android:id="@+id/tv_progress_date"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Tanggal"
+                android:textStyle="bold"
+                android:textColor="@android:color/darker_gray"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/tv_progress_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Selesai"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:background="@drawable/bg_badge_active"
+                android:textColor="@color/white" />
+        </LinearLayout>
+
         <TextView
-            android:id="@+id/tv_progress_date"
+            android:id="@+id/tv_progress_tindakan"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Tanggal"
+            android:text="Tindakan: -"
             android:textStyle="bold"
-            android:textColor="@android:color/darker_gray"
-            android:textSize="12sp"
+            android:textColor="@color/primary_blue"
+            android:textSize="13sp"
             android:layout_marginBottom="4dp" />
+
+        <TextView
+            android:id="@+id/tv_progress_tools"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Alat Terapi: -"
+            android:textColor="@color/text_secondary"
+            android:textSize="12sp"
+            android:layout_marginBottom="6dp" />
 
         <TextView
             android:id="@+id/tv_progress_note"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Catatan Perkembangan"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:id="@+id/tv_progress_cabang"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cabang: -"
+            android:textColor="@color/text_secondary"
+            android:textSize="12sp"
+            android:layout_marginBottom="2dp" />
+
+        <TextView
+            android:id="@+id/tv_progress_therapist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Terapis: -"
+            android:textColor="@color/text_secondary"
+            android:textSize="12sp" />
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>

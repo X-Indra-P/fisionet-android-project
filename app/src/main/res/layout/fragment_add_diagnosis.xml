@@ -117,17 +117,16 @@
             android:id="@+id/til_planning"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Planning"
+            android:hint="Planning (Pilih Paket Terapi)"
             android:layout_marginBottom="16dp"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
 
-            <com.google.android.material.textfield.TextInputEditText
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
                 android:id="@+id/et_planning"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textMultiLine|textCapSentences"
-                android:minLines="3"
-                android:gravity="top|start"/>
+                android:inputType="none"
+                android:padding="16dp" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <CheckBox

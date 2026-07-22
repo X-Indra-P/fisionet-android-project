@@ -18,7 +18,11 @@ import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.postgrest.query.Order
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 import java.util.Calendar
+import com.project.fisionettest.utils.AppPreferences
+import io.github.jan.supabase.gotrue.auth
 
 class DiagnosisDetailFragment : Fragment() {
 
@@ -53,24 +57,34 @@ class DiagnosisDetailFragment : Fragment() {
             loadProgressData()
         }
 
-        binding.btnAddProgress.setOnClickListener {
-            showAddProgressDialog()
-        }
-
-        binding.btnEditRecord.setOnClickListener {
-            if (isEditing) {
-                saveRecordChanges()
-            } else {
-                enableEditing(true)
+        val prefs = com.project.fisionettest.utils.AppPreferences(requireContext())
+        if (prefs.userRole == 2) {
+            binding.btnEditRecord.visibility = View.GONE
+            binding.btnDeleteRecord.visibility = View.GONE
+        } else {
+            binding.btnEditRecord.setOnClickListener {
+                if (isEditing) {
+                    saveRecordChanges()
+                } else {
+                    enableEditing(true)
+                }
             }
-        }
 
-        binding.btnDeleteRecord.setOnClickListener {
-            showDeleteConfirmation()
+            binding.btnDeleteRecord.setOnClickListener {
+                showDeleteConfirmation()
+            }
         }
 
         binding.btnBack.setOnClickListener {
             findNavController().popBackStack()
+        }
+
+        if (prefs.userRole == 1) {
+            binding.btnServeSession.visibility = View.GONE
+        }
+
+        binding.btnServeSession.setOnClickListener {
+            showServeSessionDialog()
         }
     }
 
@@ -82,14 +96,18 @@ class DiagnosisDetailFragment : Fragment() {
         binding.tvReadVitalSign.text = record.vital_sign
         binding.tvReadPatientProblem.text = record.patient_problem
         binding.tvReadInspection.text = record.inspection
-        binding.tvReadPlanning.text = record.planning
+        
+        val packageTools = record.cabang_package?.packages?.tools?.joinToString(", ") ?: "-"
+        binding.tvReadPlanning.text = packageTools
 
         // Edit Mode (EditTexts)
         binding.etDetailDiagnosis.setText(record.diagnosa)
         binding.etDetailVitalSign.setText(record.vital_sign)
         binding.etDetailPatientProblem.setText(record.patient_problem)
         binding.etDetailInspection.setText(record.inspection)
-        binding.etDetailPlanning.setText(record.planning)
+        binding.etDetailPlanning.setText(packageTools)
+        // Make planning read-only in edit mode since it's driven by package selection now
+        binding.etDetailPlanning.isEnabled = false
     }
 
     private fun enableEditing(enable: Boolean) {
@@ -122,8 +140,7 @@ class DiagnosisDetailFragment : Fragment() {
                     diagnosa = binding.etDetailDiagnosis.text.toString(), // Updated field name
                     vital_sign = binding.etDetailVitalSign.text.toString(),
                     patient_problem = binding.etDetailPatientProblem.text.toString(),
-                    inspection = binding.etDetailInspection.text.toString(),
-                    planning = binding.etDetailPlanning.text.toString()
+                    inspection = binding.etDetailInspection.text.toString()
                 )
 
                 if (updatedRecord != null) {
@@ -183,73 +200,236 @@ class DiagnosisDetailFragment : Fragment() {
 
     private fun loadProgressData() {
         lifecycleScope.launch {
+            val initialBinding = _binding ?: return@launch
+            val prefs = com.project.fisionettest.utils.AppPreferences(requireContext())
+            initialBinding.pbLoading.visibility = View.VISIBLE
+            initialBinding.tvEmptyProgress.visibility = View.GONE
             try {
-                val progressList = SupabaseClient.client.from("patient_progress").select {
+                // 1. Fetch transactions for this diagnosis to check for active/pending session
+                val transactions = SupabaseClient.client.from("transactions").select {
                     filter {
-                         eq("patient_id", patientId)
-                         // Also filter by diagnosis_id if available to show only relevant progress
-                         currentRecord?.id?.let { eq("diagnosis_id", it) }
+                        eq("patient_id", patientId)
+                        eq("diagnosis_id", currentRecord?.id ?: -1)
                     }
-                    order("date", Order.DESCENDING)
-                }.decodeList<com.project.fisionettest.data.model.PatientProgress>()
-                
-                progressAdapter.submitList(progressList)
-                binding.tvEmptyProgress.visibility = if (progressList.isEmpty()) View.VISIBLE else View.GONE
+                }.decodeList<com.project.fisionettest.data.model.Transaction>()
+
+                val pendingTrx = transactions.firstOrNull { it.payment_status == "pending" }
+
+                val prefs = com.project.fisionettest.utils.AppPreferences(requireContext())
+                val packages = SupabaseClient.getCabangPackagesForClinic(prefs.clinic)
+                val packageToolsMap = packages.associate { (it.packages?.name ?: "") to (it.packages?.tools?.joinToString(", ") ?: "") }
+
+                 // 3. Fetch progress records for this diagnosis
+                 val progressList = SupabaseClient.client.from("patient_progress").select(
+                     columns = io.github.jan.supabase.postgrest.query.Columns.raw("*, profiles(*), cabang_package(*, packages(*))")
+                 ) {
+                     filter {
+                          eq("patient_id", patientId)
+                          currentRecord?.id?.let { eq("diagnosis_id", it) }
+                     }
+                     order("id", Order.DESCENDING)
+                 }.decodeList<com.project.fisionettest.data.model.PatientProgress>()
+ 
+                 val allTools = SupabaseClient.client.from("tools").select().decodeList<com.project.fisionettest.data.model.Tool>()
+                 val toolsMap = allTools.filter { it.id != null }.associate { it.id!! to (it.nama_tools ?: "") }
+ 
+                 // Check again after suspend points
+                 val uiBinding = _binding ?: return@launch
+                 progressAdapter.updateToolsMap(toolsMap)
+
+                // Show tools instead of package name in Planning
+                currentRecord?.let { record ->
+                    val pkgName = record.cabang_package?.packages?.name
+                    val toolsForPlanning = if (pkgName != null) packageToolsMap[pkgName] ?: "-" else "-"
+                    uiBinding.tvReadPlanning.text = toolsForPlanning
+                    uiBinding.etDetailPlanning.setText(toolsForPlanning)
+                }
+
+                // 4. Determine display depending on pending transactions
+                if (pendingTrx != null) {
+                    uiBinding.btnServeSession.visibility = View.GONE
+                    uiBinding.cvActiveSession.visibility = View.VISIBLE
+
+                    // Find corresponding package name
+                    val matchedPkg = packages.firstOrNull { it.id == pendingTrx.cabang_package_id }
+                    val activePackageName = matchedPkg?.packages?.name ?: ""
+
+                    uiBinding.tvActiveDate.text = "Tanggal Sesi: ${pendingTrx.date}"
+                    uiBinding.tvActivePackageName.text = "Paket Terapi: $activePackageName"
+                    uiBinding.tvActiveTools.text = "Alat Terapi: ${packageToolsMap[activePackageName] ?: "-"}"
+
+                    // Find progress record for this active transaction
+                    val activeProgress = progressList.firstOrNull { 
+                        it.date == pendingTrx.date && it.cabang_package?.id == pendingTrx.cabang_package_id 
+                    }
+
+                    uiBinding.btnPayActiveSession.setOnClickListener {
+                        showAddProgressBeforePaymentDialog(activeProgress?.id, activeProgress?.progress_note, pendingTrx.id ?: 0)
+                    }
+
+                    // Display only completed sessions in history
+                    val completedProgressList = progressList.filter { it.id != activeProgress?.id }
+                    progressAdapter.submitList(completedProgressList)
+                    uiBinding.tvEmptyProgress.visibility = if (completedProgressList.isEmpty()) View.VISIBLE else View.GONE
+                } else {
+                    if (prefs.userRole == 1) {
+                        uiBinding.btnServeSession.visibility = View.GONE
+                    } else {
+                        uiBinding.btnServeSession.visibility = View.VISIBLE
+                    }
+                    uiBinding.cvActiveSession.visibility = View.GONE
+                    
+                    progressAdapter.submitList(progressList)
+                    uiBinding.tvEmptyProgress.visibility = if (progressList.isEmpty()) View.VISIBLE else View.GONE
+                }
+
             } catch (e: Exception) {
-                 // Log error
+                 e.printStackTrace()
+            } finally {
+                _binding?.pbLoading?.visibility = View.GONE
             }
         }
     }
 
-    private fun showAddProgressDialog() {
-        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_add_progress, null)
-        val etDate = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.et_progress_date)
-        val etNote = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.et_progress_note)
+    private fun showServeSessionDialog() {
+        lifecycleScope.launch {
+            val initialBinding = _binding ?: return@launch
+            initialBinding.pbLoading.visibility = View.VISIBLE
+            try {
+                val prefs = com.project.fisionettest.utils.AppPreferences(requireContext())
+                val packageList = SupabaseClient.getCabangPackagesForClinic(prefs.clinic)
+                val packageNames = packageList.map { pkg ->
+                    "${pkg.packages?.name} - Alat: ${pkg.packages?.tools?.joinToString(", ")}"
+                }.toTypedArray()
 
-        // Set current date by default
-        val calendar = Calendar.getInstance()
-        val year = calendar.get(Calendar.YEAR)
-        val month = calendar.get(Calendar.MONTH)
-        val day = calendar.get(Calendar.DAY_OF_MONTH)
-        etDate.setText("$year-${month + 1}-$day")
-        
-        etDate.setOnClickListener {
-             android.app.DatePickerDialog(requireContext(), { _, y, m, d ->
-                etDate.setText("$y-${m + 1}-$d")
-            }, year, month, day).show()
+                var selectedIndex = 0
+                AlertDialog.Builder(requireContext())
+                    .setTitle("Pilih Paket Terapi (Layani)")
+                    .setSingleChoiceItems(packageNames, 0) { _, which ->
+                        selectedIndex = which
+                    }
+                    .setPositiveButton("Layani") { dialog, _ ->
+                        dialog.dismiss()
+                        startTherapySession(packageList[selectedIndex])
+                    }
+                    .setNegativeButton("Batal", null)
+                    .show()
+            } catch (e: Exception) {
+                Toast.makeText(requireContext(), "Gagal memuat paket: ${e.message}", Toast.LENGTH_SHORT).show()
+            } finally {
+                _binding?.pbLoading?.visibility = View.GONE
+            }
+        }
+    }
+
+    private fun startTherapySession(selectedPkg: com.project.fisionettest.data.model.CabangPackage) {
+        lifecycleScope.launch {
+            val initialBinding = _binding ?: return@launch
+            initialBinding.pbLoading.visibility = View.VISIBLE
+            try {
+                val todayStr = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault()).format(java.util.Date())
+                val prefs = com.project.fisionettest.utils.AppPreferences(requireContext())
+                val user = SupabaseClient.client.auth.currentUserOrNull()
+
+                // 1. Create Transaction (pending)
+                val newTransaction = kotlinx.serialization.json.buildJsonObject {
+                    put("date", todayStr)
+                    put("patient_id", patientId)
+                    put("diagnosis_id", currentRecord?.id)
+                    put("cabang_package_id", selectedPkg.id)
+                    put("total_amount", selectedPkg.packages?.price ?: 0.0)
+                    put("payment_status", "pending")
+                    put("id_cabang", com.project.fisionettest.utils.ClinicMapper.toId(prefs.clinic))
+                    put("profile_id", user?.id)
+                }
+                SupabaseClient.client.from("transactions").insert(newTransaction)
+
+                // 2. Create Patient Progress record
+                val newProgress = com.project.fisionettest.data.model.PatientProgress(
+                    patient_id = patientId,
+                    diagnosis_id = currentRecord?.id,
+                    date = todayStr,
+                    progress_note = "",
+                    cabang_package_id = selectedPkg.id,
+                    status = "Proses",
+                    profile_id = prefs.userId,
+                    id_cabang = com.project.fisionettest.utils.ClinicMapper.toId(prefs.clinic)
+                )
+                SupabaseClient.client.from("patient_progress").insert(newProgress)
+
+                // 3. Update Diagnosis status back to "Proses"
+                currentRecord?.id?.let { diagId ->
+                    SupabaseClient.client.from("diagnosis").update(
+                        buildJsonObject { put("status", "Proses") }
+                    ) {
+                        filter { eq("id", diagId) }
+                    }
+                }
+
+                Toast.makeText(requireContext(), "Sesi terapi baru dimulai!", Toast.LENGTH_SHORT).show()
+                loadProgressData() // Reload
+            } catch (e: Exception) {
+                Toast.makeText(requireContext(), "Gagal memulai sesi: ${e.message}", Toast.LENGTH_LONG).show()
+            } finally {
+                _binding?.pbLoading?.visibility = View.GONE
+            }
+        }
+    }
+
+
+
+    private fun showAddProgressBeforePaymentDialog(progressId: Int?, progressNote: String?, transactionId: Int) {
+        val input = com.google.android.material.textfield.TextInputEditText(requireContext()).apply {
+            hint = "Tulis Catatan Perkembangan Sesi Ini..."
+            minLines = 3
+            gravity = android.view.Gravity.TOP or android.view.Gravity.START
+            setText(progressNote ?: "")
+        }
+        val layout = android.widget.LinearLayout(requireContext()).apply {
+            orientation = android.widget.LinearLayout.VERTICAL
+            setPadding(40, 20, 40, 20)
+            addView(input)
         }
 
         AlertDialog.Builder(requireContext())
-            .setTitle("Tambah Perkembangan")
-            .setView(dialogView)
-            .setPositiveButton("Simpan") { _, _ ->
-                val date = etDate.text.toString()
-                val note = etNote.text.toString()
-                if (date.isNotBlank() && note.isNotBlank()) {
-                    saveProgress(date, note)
-                } else {
-                    Toast.makeText(requireContext(), "Mohon isi semua data", Toast.LENGTH_SHORT).show()
+            .setTitle("Catatan Perkembangan")
+            .setMessage("Silakan lengkapi catatan perkembangan pasien sebelum melanjutkan ke pembayaran.")
+            .setView(layout)
+            .setPositiveButton("Simpan & Lanjutkan") { _, _ ->
+                val noteText = input.text.toString()
+                if (noteText.isBlank()) {
+                    Toast.makeText(requireContext(), "Catatan perkembangan harus diisi", Toast.LENGTH_SHORT).show()
+                    return@setPositiveButton
                 }
+                saveActiveProgressNoteBeforePayment(progressId, noteText, transactionId)
             }
             .setNegativeButton("Batal", null)
             .show()
     }
 
-    private fun saveProgress(date: String, note: String) {
+    private fun saveActiveProgressNoteBeforePayment(progressId: Int?, note: String, transactionId: Int) {
         lifecycleScope.launch {
+            val initialBinding = _binding ?: return@launch
+            initialBinding.pbLoading.visibility = View.VISIBLE
             try {
-                val newProgress = com.project.fisionettest.data.model.PatientProgress(
-                    patient_id = patientId,
-                    diagnosis_id = currentRecord?.id, // Pass current diagnosis ID
-                    date = date,
-                    progress_note = note
-                )
+                SupabaseClient.client.from("patient_progress").update(
+                    buildJsonObject {
+                        put("progress_note", note)
+                    }
+                ) {
+                    filter { eq("id", progressId ?: -1) }
+                }
+                Toast.makeText(requireContext(), "Catatan perkembangan disimpan", Toast.LENGTH_SHORT).show()
                 
-                SupabaseClient.client.from("patient_progress").insert(newProgress)
-                Toast.makeText(requireContext(), "Perkembangan berhasil disimpan", Toast.LENGTH_SHORT).show()
-                loadProgressData() // Refresh list
+                // Navigate to Receipt page
+                val bundle = Bundle().apply {
+                    putInt("transactionId", transactionId)
+                }
+                findNavController().navigate(R.id.receiptFragment, bundle)
             } catch (e: Exception) {
-                Toast.makeText(requireContext(), "Gagal menyimpan: ${e.message}", Toast.LENGTH_LONG).show()
+                Toast.makeText(requireContext(), "Gagal menyimpan catatan: ${e.message}", Toast.LENGTH_LONG).show()
+            } finally {
+                _binding?.pbLoading?.visibility = View.GONE
             }
         }
     }

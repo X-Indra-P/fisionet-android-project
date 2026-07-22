@@ -21,8 +21,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="-160dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
+            android:layout_marginStart="@dimen/layout_margin_horizontal"
+            android:layout_marginEnd="@dimen/layout_margin_horizontal"
             android:layout_marginBottom="24dp"
             app:cardCornerRadius="16dp"
             app:cardElevation="8dp"
@@ -52,12 +52,81 @@
                     android:layout_marginTop="4dp" />
 
                 <TextView
+                    android:id="@+id/tv_clinic_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Cabang 1"
+                    android:textSize="12sp"
+                    android:textColor="@color/white"
+                    android:background="@color/primary_blue"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp"
+                    android:layout_marginTop="8dp"
+                    android:visibility="gone"
+                    android:textStyle="bold" />
+
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Dashboard FisioNet"
                     android:textSize="14sp"
                     android:textColor="@color/primary_blue"
                     android:layout_marginTop="8dp" />
+
+                <!-- Divider (Hidden) -->
+                <View
+                    android:id="@+id/dashboard_divider"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#E0E0E0"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:visibility="gone" />
+
+                <!-- Revenue Info inside Welcome Card (Hidden) -->
+                <LinearLayout
+                    android:id="@+id/btn_view_revenues_card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:visibility="gone">
+
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:src="@android:drawable/ic_menu_agenda"
+                        app:tint="#2E7D32"
+                        android:layout_marginEnd="12dp" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_weight="1">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Pendapatan Bulan Ini"
+                            android:textSize="12sp"
+                            android:textColor="@color/text_secondary" />
+
+                        <TextView
+                            android:id="@+id/tv_month_revenue"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Rp 0"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            android:textColor="#2E7D32" />
+                    </LinearLayout>
+                </LinearLayout>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
@@ -66,50 +135,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:columnCount="2"
-            android:padding="8dp">
+            android:padding="@dimen/layout_margin_horizontal">
 
-            <!-- Card 1: Total Pasien -->
-            <androidx.cardview.widget.CardView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_columnWeight="1"
-                android:layout_margin="8dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="4dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp"
-                    android:gravity="center">
-
-                    <ImageView
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:src="@android:drawable/ic_menu_myplaces"
-                        app:tint="@color/primary_blue"
-                        android:layout_marginBottom="8dp"/>
-
-                    <TextView
-                        android:id="@+id/tv_total_patients"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="0"
-                        android:textSize="28sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/text_primary" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Total Pasien"
-                        android:textSize="12sp"
-                        android:textColor="@color/text_secondary" />
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-
-            <!-- Card 2: Pasien Hari Ini -->
+            <!-- Card 1: Layanan Hari Ini -->
             <androidx.cardview.widget.CardView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -133,7 +161,7 @@
                         android:layout_marginBottom="8dp"/>
 
                     <TextView
-                        android:id="@+id/tv_today_patients"
+                        android:id="@+id/tv_today_services"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="0"
@@ -144,13 +172,54 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Pasien Hari Ini"
+                        android:text="Layanan Hari Ini"
                         android:textSize="12sp"
                         android:textColor="@color/text_secondary" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <!-- Card 3: Pasien Bulan Ini -->
+            <!-- Card 2: Layanan Minggu Ini -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:layout_margin="8dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@android:drawable/ic_menu_agenda"
+                        app:tint="@color/primary_blue"
+                        android:layout_marginBottom="8dp"/>
+
+                    <TextView
+                        android:id="@+id/tv_week_services"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0"
+                        android:textSize="28sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_primary" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Layanan Minggu Ini"
+                        android:textSize="12sp"
+                        android:textColor="@color/text_secondary" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Card 3: Layanan Bulan Ini -->
             <androidx.cardview.widget.CardView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -174,7 +243,7 @@
                         android:layout_marginBottom="8dp"/>
 
                     <TextView
-                        android:id="@+id/tv_month_patients"
+                        android:id="@+id/tv_month_services"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="0"
@@ -185,55 +254,90 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Bulan Ini"
+                        android:text="Layanan Bulan Ini"
                         android:textSize="12sp"
                         android:textColor="@color/text_secondary" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-             <!-- Card 4: Placeholder/Future -->
-            <androidx.cardview.widget.CardView
+        </GridLayout>
+
+        <!-- Today's Appointments Section Header -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="8dp">
+
+            <TextView
+                android:id="@+id/tv_today_appointments_title"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_columnWeight="1"
-                android:layout_margin="8dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="4dp"
-                app:cardBackgroundColor="@color/primary_blue">
+                android:layout_weight="1"
+                android:text="Janji Temu Hari Ini"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary" />
 
-                <LinearLayout
-                    android:id="@+id/btn_view_patients_card"
+            <ImageButton
+                android:id="@+id/btn_refresh_appointments"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/ic_popup_sync"
+                app:tint="@color/primary_blue"
+                android:contentDescription="Refresh Janji Temu" />
+        </LinearLayout>
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="@color/white">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp"
-                    android:gravity="center">
+                    android:layout_height="match_parent">
 
-                    <ImageView
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:src="@android:drawable/ic_menu_search"
-                        app:tint="@color/white"
-                        android:layout_marginBottom="8dp"/>
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rv_today_appointments"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:nestedScrollingEnabled="true" />
 
                     <TextView
+                        android:id="@+id/tv_empty_appointments"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Cari Pasien"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/white" />
-                        
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Ketuk disini"
-                        android:textSize="10sp"
-                        android:textColor="#E0E0E0" />
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
+                        android:text="Tidak ada janji temu hari ini"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="14sp"
+                        android:layout_gravity="center"
+                        android:visibility="gone" />
 
-        </GridLayout>
+                    <ProgressBar
+                        android:id="@+id/pb_appointments_loading"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:visibility="visible" />
+                </FrameLayout>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
 
         <!-- Quick Actions Title -->
         <TextView
@@ -243,33 +347,49 @@
             android:textSize="18sp"
             android:textStyle="bold"
             android:textColor="@color/text_primary"
-            android:layout_marginStart="24dp"
+            android:layout_marginStart="@dimen/form_margin_horizontal"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="8dp" />
 
         <!-- Quick Action Buttons -->
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_add_patient"
+            android:id="@+id/btn_layani_pasien"
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginEnd="24dp"
+            android:layout_marginStart="@dimen/form_margin_horizontal"
+            android:layout_marginEnd="@dimen/form_margin_horizontal"
             android:layout_marginBottom="16dp"
-            android:text="Tambah Pasien Baru"
+            android:text="Layani Pasien"
             android:textSize="16sp"
             android:textAllCaps="false"
-            app:icon="@android:drawable/ic_input_add"
+            app:icon="@android:drawable/ic_menu_myplaces"
             app:iconGravity="textStart"
             app:iconPadding="16dp"
             app:cornerRadius="12dp"
             android:backgroundTint="@color/primary_blue" />
 
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_pasien_dilayani"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginStart="@dimen/form_margin_horizontal"
+            android:layout_marginEnd="@dimen/form_margin_horizontal"
+            android:layout_marginBottom="16dp"
+            android:text="Pasien yang Dilayani"
+            android:textSize="16sp"
+            android:textAllCaps="false"
+            app:icon="@android:drawable/ic_menu_today"
+            app:iconGravity="textStart"
+            app:iconPadding="16dp"
+            app:cornerRadius="12dp"
+            android:backgroundTint="#FF9800" />
+
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_cashier_mode"
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginEnd="24dp"
+            android:layout_marginStart="@dimen/form_margin_horizontal"
+            android:layout_marginEnd="@dimen/form_margin_horizontal"
             android:layout_marginBottom="16dp"
             android:text="Cashier Mode"
             android:textSize="16sp"
@@ -279,6 +399,22 @@
             app:iconPadding="16dp"
             app:cornerRadius="12dp"
             android:backgroundTint="@color/secondary_cyan" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_report_mode"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginStart="@dimen/form_margin_horizontal"
+            android:layout_marginEnd="@dimen/form_margin_horizontal"
+            android:layout_marginBottom="24dp"
+            android:text="Cetak Pelaporan"
+            android:textSize="16sp"
+            android:textAllCaps="false"
+            app:icon="@android:drawable/ic_menu_slideshow"
+            app:iconGravity="textStart"
+            app:iconPadding="16dp"
+            app:cornerRadius="12dp"
+            android:backgroundTint="#2E7D32" />
 
     </LinearLayout>
 </ScrollView>

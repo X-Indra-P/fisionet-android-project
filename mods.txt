@@ -1,0 +1,116 @@
+{
+  "AllowMultiple": false,
+  "Description": "Add checkAndUpdateActiveAppointment helper to SupabaseClient.kt.",
+  "EndLine": 67,
+  "Instruction": "Add checkAndUpdateActiveAppointment function to SupabaseClient object and import postgrest from and json put.",
+  "ReplacementContent": "            install(Postgrest)\n        }\n    }\n\n    suspend fun checkAndUpdateActiveAppointment(context: android.content.Context) {\n        val prefs = com.project.fisionettest.utils.AppPreferences(context)\n        val activeApptId = prefs.activeAppointmentId\n        if (activeApptId != -1) {\n            try {\n                client.from(\"appointments\").update(\n                    kotlinx.serialization.json.buildJsonObject {\n                        put(\"status\", \"Selesai\")\n                    }\n                ) {\n                    filter { eq(\"id\", activeApptId) }\n                }\n                prefs.activeAppointmentId = -1\n            } catch (e: Exception) {\n                e.printStackTrace()\n            }\n        }\n    }\n}",
+  "StartLine": 63,
+  "TargetContent": "            install(Postgrest)\n        }\n    }\n}",
+  "TargetFile": "c:\\Users\\INDRA\\FIsioNetAnti\\app\\src\\main\\java\\com\\project\\fisionettest\\data\\SupabaseClient.kt",
+  "toolAction": "Adding checkAndUpdateActiveAppointment helper to SupabaseClient.kt",
+  "toolSummary": "Update SupabaseClient"
+}
+{
+  "AllowMultiple": false,
+  "Description": "Add missing imports to SupabaseClient.kt.",
+  "EndLine": 11,
+  "Instruction": "Import postgrest from and json put.",
+  "ReplacementContent": "import io.github.jan.supabase.postgrest.Postgrest\nimport io.github.jan.supabase.postgrest.from\nimport io.github.jan.supabase.serializer.KotlinXSerializer\nimport kotlinx.serialization.json.Json\nimport kotlinx.serialization.json.put\nimport io.ktor.client.plugins.HttpTimeout\nimport io.ktor.client.plugins.HttpRequestRetry",
+  "StartLine": 6,
+  "TargetContent": "import io.github.jan.supabase.postgrest.Postgrest\nimport io.github.jan.supabase.serializer.KotlinXSerializer\nimport kotlinx.serialization.json.Json\nimport io.ktor.client.plugins.HttpTimeout\nimport io.ktor.client.plugins.HttpRequestRetry",
+  "TargetFile": "c:\\Users\\INDRA\\FIsioNetAnti\\app\\src\\main\\java\\com\\project\\fisionettest\\data\\SupabaseClient.kt",
+  "toolAction": "Adding imports in SupabaseClient.kt",
+  "toolSummary": "Update SupabaseClient"
+}
+{
+  "AllowMultiple": false,
+  "Description": "Add autoMarkPastAppointmentsAsMissed helper to SupabaseClient.kt.",
+  "EndLine": 88,
+  "Instruction": "Add autoMarkPastAppointmentsAsMissed function to SupabaseClient object.",
+  "ReplacementContent": "    suspend fun autoMarkPastAppointmentsAsMissed() {\n        val dateFormat = java.text.SimpleDateFormat(\"yyyy-MM-dd\", java.util.Locale.getDefault())\n        val today = dateFormat.format(java.util.Date())\n        try {\n            client.from(\"appointments\").update(\n                kotlinx.serialization.json.buildJsonObject {\n                    put(\"status\", \"Dibatalkan\")\n                }\n            ) {\n                filter {\n                    eq(\"status\", \"Terjadwal\")\n                    lt(\"date\", today)\n                }\n            }\n        } catch (e: Exception) {\n            e.printStackTrace()\n        }\n    }\n}",
+  "StartLine": 84,
+  "TargetContent": "            }\n        }\n    }\n}",
+  "TargetFile": "c:\\Users\\INDRA\\FIsioNetAnti\\app\\src\\main\\java\\com\\project\\fisionettest\\data\\SupabaseClient.kt",
+  "toolAction": "Adding autoMarkPastAppointmentsAsMissed to SupabaseClient.kt",
+  "toolSummary": "Update SupabaseClient"
+}
+{
+  "AllowMultiple": false,
+  "Description": "Fix brackets and indentation for checkAndUpdateActiveAppointment and autoMarkPastAppointmentsAsMissed in SupabaseClient.kt.",
+  "EndLine": 86,
+  "Instruction": "Fix braces for try-catch and method closing.",
+  "ReplacementContent": "            } catch (e: Exception) {\n                e.printStackTrace()\n            }\n        }\n    }\n\n    suspend fun autoMarkPastAppointmentsAsMissed() {\n        val dateFormat = java.text.SimpleDateFormat(\"yyyy-MM-dd\", java.util.Locale.getDefault())",
+  "StartLine": 82,
+  "TargetContent": "            } catch (e: Exception) {\n                e.printStackTrace()\n    suspend fun autoMarkPastAppointmentsAsMissed() {\n        val dateFormat = java.text.SimpleDateFormat(\"yyyy-MM-dd\", java.util.Locale.getDefault())",
+  "TargetFile": "c:\\Users\\INDRA\\FIsioNetAnti\\app\\src\\main\\java\\com\\project\\fisionettest\\data\\SupabaseClient.kt",
+  "toolAction": "Fixing braces in SupabaseClient.kt",
+  "toolSummary": "Update SupabaseClient"
+}
+{
+  "AllowMultiple": false,
+  "Description": "Add getPackagesForClinic function to SupabaseClient.kt.",
+  "EndLine": 107,
+  "Instruction": "Append getPackagesForClinic at the end of the file.",
+  "ReplacementContent": "        } catch (e: Exception) {\n            e.printStackTrace()\n        }\n    }\n\n    suspend fun getPackagesForClinic(clinicName: String?): List<com.project.fisionettest.data.model.Package> {\n        val clinicId = when (clinicName) {\n            \"Cabang 1\" -> 1\n            \"Cabang 2\" -> 2\n            else -> null\n        }\n\n        try {\n            val mappings = client.from(\"cabang_package\").select(\n                columns = io.github.jan.supabase.postgrest.query.Columns.raw(\"*, packages(*), tools(*)\")\n            ) {\n                if (clinicId != null) {\n                    filter { eq(\"id_cabang\", clinicId) }\n                }\n            }.decodeList<com.project.fisionettest.data.model.CabangPackage>()\n\n            return mappings.groupBy { it.id_package }.map { (pkgId, maps) ->\n                val firstMap = maps.first()\n                val pkgName = firstMap.packages?.name ?: \"Paket $pkgId\"\n                val pkgPrice = firstMap.packages?.price ?: 0.0\n                val toolNames = maps.mapNotNull { it.tools?.nama_tools }.distinct()\n                com.project.fisionettest.data.model.Package(\n                    id = pkgId,\n                    name = pkgName,\n                    price = pkgPrice,\n                    tools = toolNames\n                )\n            }.sortedBy { it.name }\n        } catch (e: Exception) {\n            e.printStackTrace()\n            return try {\n                client.from(\"packages\").select().decodeList<com.project.fisionettest.data.model.Package>()\n            } catch (ex: Exception) {\n                emptyList()\n            }\n        }\n    }\n}",
+  "StartLine": 102,
+  "TargetContent": "        } catch (e: Exception) {\n            e.printStackTrace()\n        }\n    }\n}",
+  "TargetFile": "c:\\Users\\INDRA\\FIsioNetAnti\\app\\src\\main\\java\\com\\project\\fisionettest\\data\\SupabaseClient.kt",
+  "toolAction": "Adding getPackagesForClinic function to SupabaseClient.kt",
+  "toolSummary": "Update SupabaseClient"
+}
+{
+  "AllowMultiple": false,
+  "Description": "Update getPackagesForClinic to resolve tool names from array id_tools using a separate fetch.",
+  "EndLine": 144,
+  "Instruction": "Update getPackagesForClinic function to resolve tool names from array of IDs.",
+  "ReplacementContent": "    suspend fun getPackagesForClinic(clinicName: String?): List<com.project.fisionettest.data.model.Package> {\n        val clinicId = when (clinicName) {\n            \"Cabang 1\" -> 1\n            \"Cabang 2\" -> 2\n            else -> null\n        }\n\n        try {\n            val mappings = client.from(\"cabang_package\").select(\n                columns = io.github.jan.supabase.postgrest.query.Columns.raw(\"*, packages(*)\")\n            ) {\n                if (clinicId != null) {\n                    filter { eq(\"id_cabang\", clinicId) }\n                }\n            }.decodeList<com.project.fisionettest.data.model.CabangPackage>()\n\n            val allTools = client.from(\"tools\").select().decodeList<com.project.fisionettest.data.model.Tool>()\n            val toolsMap = allTools.associate { it.id to it.nama_tools }\n\n            return mappings.groupBy { it.id_package }.map { (pkgId, maps) ->\n                val firstMap = maps.first()\n                val pkgName = firstMap.packages?.name ?: \"Paket $pkgId\"\n                val pkgPrice = firstMap.packages?.price ?: 0.0\n                val toolIds = maps.flatMap { it.id_tools ?: emptyList() }.distinct()\n                val toolNames = toolIds.mapNotNull { toolsMap[it] }\n                com.project.fisionettest.data.model.Package(\n                    id = pkgId,\n                    name = pkgName,\n                    price = pkgPrice,\n                    tools = toolNames\n                )\n            }.sortedBy { it.name }\n        } catch (e: Exception) {\n            e.printStackTrace()\n            return try {\n                client.from(\"packages\").select().decodeList<com.project.fisionettest.data.model.Package>()\n            } catch (ex: Exception) {\n                emptyList()\n            }\n        }\n    }\n}",
+  "StartLine": 107,
+  "TargetContent": "    suspend fun getPackagesForClinic(clinicName: String?): List<com.project.fisionettest.data.model.Package> {\n        val clinicId = when (clinicName) {\n            \"Cabang 1\" -> 1\n            \"Cabang 2\" -> 2\n            else -> null\n        }\n\n        try {\n            val mappings = client.from(\"cabang_package\").select(\n                columns = io.github.jan.supabase.postgrest.query.Columns.raw(\"*, packages(*), tools(*)\")\n            ) {\n                if (clinicId != null) {\n                    filter { eq(\"id_cabang\", clinicId) }\n                }\n            }.decodeList<com.project.fisionettest.data.model.CabangPackage>()\n\n            return mappings.groupBy { it.id_package }.map { (pkgId, maps) ->\n                val firstMap = maps.first()\n                val pkgName = firstMap.packages?.name ?: \"Paket $pkgId\"\n                val pkgPrice = firstMap.packages?.price ?: 0.0\n                val toolNames = maps.mapNotNull { it.tools?.nama_tools }.distinct()\n                com.project.fisionettest.data.model.Package(\n                    id = pkgId,\n                    name = pkgName,\n                    price = pkgPrice,\n                    tools = toolNames\n                )\n            }.sortedBy { it.name }\n        } catch (e: Exception) {\n            e.printStackTrace()\n            return try {\n                client.from(\"packages\").select().decodeList<com.project.fisionettest.data.model.Package>()\n            } catch (ex: Exception) {\n                emptyList()\n            }\n        }\n    }\n}",
+  "TargetFile": "c:\\Users\\INDRA\\FIsioNetAnti\\app\\src\\main\\java\\com\\project\\fisionettest\\data\\SupabaseClient.kt",
+  "toolAction": "Updating getPackagesForClinic function in SupabaseClient.kt",
+  "toolSummary": "Update SupabaseClient"
+}
+{
+  "AllowMultiple": false,
+  "Description": "Add getCabangPackagesForClinic to SupabaseClient",
+  "EndLine": 141,
+  "Instruction": "Add a new method getCabangPackagesForClinic that returns CabangPackage with populated tools strings",
+  "ReplacementContent": "        } catch (e: Exception) {\n            e.printStackTrace()\n            return emptyList()\n        }\n    }\n\n    suspend fun getCabangPackagesForClinic(clinicName: String?): List<com.project.fisionettest.data.model.CabangPackage> {\n        val clinicId = when (clinicName) {\n            \"Cabang 1\" -> 1\n            \"Cabang 2\" -> 2\n            else -> null\n        }\n\n        try {\n            val mappings = client.from(\"cabang_package\").select(\n                columns = io.github.jan.supabase.postgrest.query.Columns.raw(\"*, packages(*)\")\n            ) {\n                if (clinicId != null) {\n                    filter { eq(\"id_cabang\", clinicId) }\n                }\n            }.decodeList<com.project.fisionettest.data.model.CabangPackage>()\n\n            val allTools = client.from(\"tools\").select().decodeList<com.project.fisionettest.data.model.Tool>()\n            val toolsMap = allTools.associate { it.id to it.nama_tools }\n\n            return mappings.map { map ->\n                val toolNames = map.id_tools?.mapNotNull { toolsMap[it] } ?: emptyList()\n                val pkgWithTools = map.packages?.copy(tools = toolNames)\n                map.copy(packages = pkgWithTools)\n            }.sortedBy { it.packages?.name }\n        } catch (e: Exception) {\n            e.printStackTrace()\n            return emptyList()\n        }\n    }",
+  "StartLine": 139,
+  "TargetContent": "        } catch (e: Exception) {\n            e.printStackTrace()\n            return try {",
+  "TargetFile": "c:\\Users\\INDRA\\FIsioNetAnti\\app\\src\\main\\java\\com\\project\\fisionettest\\data\\SupabaseClient.kt",
+  "toolAction": "Adding getCabangPackagesForClinic to SupabaseClient",
+  "toolSummary": "Update SupabaseClient"
+}
+{
+  "Description": "Fix syntax error in SupabaseClient.kt",
+  "Instruction": "Remove leftover catch block lines from previous replacement",
+  "ReplacementChunks": [
+    {
+      "AllowMultiple": false,
+      "EndLine": 176,
+      "ReplacementContent": "        } catch (e: Exception) {\n            e.printStackTrace()\n            return emptyList()\n        }\n    }",
+      "StartLine": 171,
+      "TargetContent": "        } catch (e: Exception) {\n            e.printStackTrace()\n            return emptyList()\n        }\n    }\n                client.from(\"packages\").select().decodeList<com.project.fisionettest.data.model.Package>()\n            } catch (ex: Exception) {\n                 emptyList()\n            }"
+    }
+  ],
+  "TargetFile": "c:\\Users\\INDRA\\FIsioNetAnti\\app\\src\\main\\java\\com\\project\\fisionettest\\data\\SupabaseClient.kt",
+  "toolAction": "Fixing syntax in SupabaseClient.kt",
+  "toolSummary": "Fix SupabaseClient"
+}
+{
+  "Description": "Increase Ktor engine timeout to fix 10000ms idle timeout issue",
+  "Instruction": "Add CIO engine with custom timeouts",
+  "ReplacementChunks": [
+    {
+      "AllowMultiple": false,
+      "EndLine": 40,
+      "ReplacementContent": "            httpEngine = io.ktor.client.engine.cio.CIO.create {\n                requestTimeout = 40000\n                endpoint {\n                    connectTimeout = 40000\n                    keepAliveTime = 40000\n                }\n            }\n\n            httpConfig {\n                install(HttpTimeout) {\n                    requestTimeoutMillis = 40000\n                    connectTimeoutMillis = 40000\n                    socketTimeoutMillis = 40000\n                }\n                install(HttpRequestRetry) {\n                    retryOnExceptionOrServerErrors(maxRetries = 3)\n                    exponentialDelay()\n                }\n            }\n",
+      "StartLine": 29,
+      "TargetContent": "            httpConfig {\n                install(HttpTimeout) {\n                    requestTimeoutMillis = 40000\n                    connectTimeoutMillis = 40000\n                    socketTimeoutMillis = 40000\n                }\n                install(HttpRequestRetry) {\n                    retryOnExceptionOrServerErrors(maxRetries = 3)\n                    exponentialDelay()\n                }\n            }\n"
+    }
+  ],
+  "TargetFile": "c:\\Users\\INDRA\\FIsioNetAnti\\app\\src\\main\\java\\com\\project\\fisionettest\\data\\SupabaseClient.kt",
+  "toolAction": "Updating Supabase client timeouts",
+  "toolSummary": "Fix timeouts"
+}

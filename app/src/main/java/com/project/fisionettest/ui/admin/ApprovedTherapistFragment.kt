@@ -40,32 +40,32 @@ class ApprovedTherapistFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        loadApprovedTherapists()
+        loadAllTherapists()
     }
 
     private fun setupRecyclerView() {
         adapter = ApprovedTherapistAdapter(
             emptyList(),
-            onTransferBranch = { profile ->
-                showTransferBranchDialog(profile)
-            }
+            onTransferBranch = { profile -> showTransferBranchDialog(profile) },
+            onToggleStatus   = { profile -> showToggleStatusDialog(profile) }
         )
         binding.rvApprovedTherapists.layoutManager = LinearLayoutManager(context)
         binding.rvApprovedTherapists.adapter = adapter
     }
 
-    private fun loadApprovedTherapists() {
+    /** Load semua terapis: verified + inactive + suspended */
+    private fun loadAllTherapists() {
         showLoading(true)
         lifecycleScope.launch {
             try {
-                val approvedList = adminRepository.getApprovedTherapists()
-                if (approvedList.isEmpty()) {
+                val list = adminRepository.getAllTherapists()
+                if (list.isEmpty()) {
                     binding.tvEmpty.visibility = View.VISIBLE
                     binding.rvApprovedTherapists.visibility = View.GONE
                 } else {
                     binding.tvEmpty.visibility = View.GONE
                     binding.rvApprovedTherapists.visibility = View.VISIBLE
-                    adapter.updateList(approvedList)
+                    adapter.updateList(list)
                 }
             } catch (e: Exception) {
                 Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
@@ -75,17 +75,20 @@ class ApprovedTherapistFragment : Fragment() {
         }
     }
 
+    // ── Dialog Pindah Cabang ─────────────────────────────────────────────────
     private fun showTransferBranchDialog(profile: Profile) {
         val dialogView = LayoutInflater.from(requireContext())
             .inflate(R.layout.dialog_approve_therapist, null)
         val spinner = dialogView.findViewById<Spinner>(R.id.spinnerClinic)
 
         val clinics = arrayOf("Cabang 1", "Cabang 2")
-        val spinnerAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, clinics)
-        spinner.adapter = spinnerAdapter
-
-        // Pre-select current clinic
-        val currentIndex = clinics.indexOf(profile.clinic)
+        spinner.adapter = ArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_spinner_dropdown_item,
+            clinics
+        )
+        val currentBranchName = com.project.fisionettest.utils.ClinicMapper.toName(profile.id_cabang)
+        val currentIndex = clinics.indexOf(currentBranchName)
         if (currentIndex >= 0) spinner.setSelection(currentIndex)
 
         AlertDialog.Builder(requireContext())
@@ -93,11 +96,11 @@ class ApprovedTherapistFragment : Fragment() {
             .setMessage("Pindahkan ${profile.displayName ?: "terapis"} ke cabang mana?")
             .setView(dialogView)
             .setPositiveButton("Pindahkan") { _, _ ->
-                val selectedClinic = spinner.selectedItem.toString()
-                if (selectedClinic == profile.clinic) {
+                val selected = spinner.selectedItem.toString()
+                if (selected == currentBranchName) {
                     Toast.makeText(requireContext(), "Terapis sudah berada di cabang ini", Toast.LENGTH_SHORT).show()
                 } else {
-                    transferBranch(profile.id, selectedClinic)
+                    transferBranch(profile.id, selected)
                 }
             }
             .setNegativeButton("Batal", null)
@@ -109,10 +112,47 @@ class ApprovedTherapistFragment : Fragment() {
         lifecycleScope.launch {
             try {
                 adminRepository.transferBranch(userId, newClinic)
-                Toast.makeText(context, "Terapis berhasil dipindahkan ke $newClinic", Toast.LENGTH_SHORT).show()
-                loadApprovedTherapists()
+                Toast.makeText(context, "✓ Terapis dipindahkan ke $newClinic", Toast.LENGTH_SHORT).show()
+                loadAllTherapists()
             } catch (e: Exception) {
                 Toast.makeText(context, "Gagal memindahkan cabang: ${e.message}", Toast.LENGTH_SHORT).show()
+            } finally {
+                showLoading(false)
+            }
+        }
+    }
+
+    // ── Dialog Nonaktifkan / Aktifkan ────────────────────────────────────────
+    private fun showToggleStatusDialog(profile: Profile) {
+        val isActive   = profile.status == "verified"
+        val name       = profile.displayName ?: "terapis ini"
+        val action     = if (isActive) "nonaktifkan" else "aktifkan kembali"
+        val actionBtn  = if (isActive) "Nonaktifkan" else "Aktifkan"
+
+        AlertDialog.Builder(requireContext())
+            .setTitle(if (isActive) "Nonaktifkan Terapis" else "Aktifkan Kembali")
+            .setMessage("Apakah Anda yakin ingin $action akun $name?")
+            .setPositiveButton(actionBtn) { _, _ ->
+                toggleTherapistStatus(profile.id, isActive)
+            }
+            .setNegativeButton("Batal", null)
+            .show()
+    }
+
+    private fun toggleTherapistStatus(userId: String, isCurrentlyActive: Boolean) {
+        showLoading(true)
+        lifecycleScope.launch {
+            try {
+                if (isCurrentlyActive) {
+                    adminRepository.deactivateTherapist(userId)
+                    Toast.makeText(context, "✓ Akun terapis dinonaktifkan", Toast.LENGTH_SHORT).show()
+                } else {
+                    adminRepository.reactivateTherapist(userId)
+                    Toast.makeText(context, "✓ Akun terapis diaktifkan kembali", Toast.LENGTH_SHORT).show()
+                }
+                loadAllTherapists()
+            } catch (e: Exception) {
+                Toast.makeText(context, "Gagal mengubah status: ${e.message}", Toast.LENGTH_SHORT).show()
             } finally {
                 showLoading(false)
             }

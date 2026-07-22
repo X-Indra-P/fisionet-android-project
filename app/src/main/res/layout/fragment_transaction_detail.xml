@@ -292,6 +292,88 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- CARD 4: Status Pembayaran -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp"
+                app:cardBackgroundColor="@color/white">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="STATUS PEMBAYARAN"
+                        android:textSize="10sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.1"
+                        android:textColor="@color/primary_blue"
+                        android:layout_marginBottom="12dp"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <TextView
+                            android:id="@+id/tv_payment_status"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Menunggu Pembayaran"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="#F57C00"/>
+
+                        <!-- Tombol Bayar Sekarang — hanya tampil jika status pending dan ada invoice url -->
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btn_pay_now"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Bayar"
+                            android:textSize="12sp"
+                            android:textAllCaps="false"
+                            android:layout_marginEnd="8dp"
+                            app:cornerRadius="12dp"
+                            android:backgroundTint="#2E7D32"
+                            android:visibility="gone"/>
+
+                        <!-- Tombol Cek Status — hanya tampil jika status pending dan ada xendit_id -->
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btn_check_payment"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Cek Status"
+                            android:textSize="12sp"
+                            android:textAllCaps="false"
+                            app:cornerRadius="12dp"
+                            android:backgroundTint="@color/primary_blue"
+                            android:visibility="gone"/>
+
+                    </LinearLayout>
+
+                    <!-- Info cabang -->
+                    <TextView
+                        android:id="@+id/tv_cabang_detail"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=""
+                        android:textSize="12sp"
+                        android:textColor="@color/text_secondary"
+                        android:layout_marginTop="8dp"/>
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
         </LinearLayout>
     </ScrollView>
 

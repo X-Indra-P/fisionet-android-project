@@ -30,10 +30,6 @@ class CashierMenuFragment : Fragment() {
             findNavController().navigate(R.id.action_cashierMenu_to_addTransaction)
         }
 
-        binding.cardAddPackage.setOnClickListener {
-            findNavController().navigate(R.id.action_cashierMenu_to_packageList)
-        }
-
         binding.cardHistory.setOnClickListener {
             findNavController().navigate(R.id.action_cashierMenu_to_history)
         }

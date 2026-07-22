@@ -41,8 +41,11 @@ class PackageListFragment : Fragment() {
             showAddEditDialog(null)
         }
 
-        binding.btnBack.setOnClickListener {
-            findNavController().popBackStack()
+        binding.btnManageTools.setOnClickListener {
+            val dialog = ManageToolsDialog {
+                loadPackages()
+            }
+            dialog.show(parentFragmentManager, "ManageToolsDialog")
         }
     }
 
@@ -64,13 +67,13 @@ class PackageListFragment : Fragment() {
 
     private fun loadPackages() {
         binding.progressBar.visibility = View.VISIBLE
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             try {
-                val packages = SupabaseClient.client.from("packages").select().decodeList<Package>()
+                val packages = SupabaseClient.getPackagesForClinic(null)
                 packageAdapter.submitList(packages)
                 binding.tvEmpty.visibility = if (packages.isEmpty()) View.VISIBLE else View.GONE
             } catch (e: Exception) {
-                Toast.makeText(requireContext(), "Gagal memuat paket: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Gagal memuat paket: ${e.message}", Toast.LENGTH_LONG).show()
             } finally {
                 binding.progressBar.visibility = View.GONE
             }

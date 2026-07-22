@@ -1,5 +1,6 @@
 package com.project.fisionettest.ui.appointment
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -20,7 +21,7 @@ class AppointmentAdapter : ListAdapter<Appointment, AppointmentAdapter.Appointme
     }
 
     override fun onBindViewHolder(holder: AppointmentViewHolder, position: Int) {
-        holder.bind(getItem(position))
+        holder.bind(getItem(position), onServeClick)
         holder.itemView.setOnClickListener {
             val currentPosition = holder.bindingAdapterPosition
             if (currentPosition != RecyclerView.NO_POSITION) {
@@ -30,40 +31,80 @@ class AppointmentAdapter : ListAdapter<Appointment, AppointmentAdapter.Appointme
     }
 
     var onItemClick: ((Appointment) -> Unit)? = null
+    var onServeClick: ((Appointment) -> Unit)? = null
 
     class AppointmentViewHolder(
         private val binding: ItemAppointmentBinding
     ) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(appointment: Appointment) {
-            binding.tvPatientName.text = "Pasien: ${appointment.patient_name ?: "N/A"}"
-            binding.tvDate.text = "Tanggal: ${appointment.date}"
-            binding.tvTime.text = "Waktu: ${appointment.time}"
-            
+        fun bind(appointment: Appointment, onServeClick: ((Appointment) -> Unit)?) {
+            val name = appointment.patients?.name ?: "N/A"
+            binding.tvPatientName.text = name
+
+            // Avatar initial — huruf pertama nama pasien
+            binding.tvAvatarInitial.text = name.firstOrNull()?.uppercase() ?: "?"
+
+            // Format date
+            binding.tvDate.text = formatDate(appointment.date)
+
+            // Format time (trim seconds if present: "08:00:00" -> "08:00")
+            binding.tvTime.text = appointment.time.take(5)
+
+            // Notes
             if (!appointment.notes.isNullOrBlank()) {
-                binding.tvNotes.text = "Catatan: ${appointment.notes}"
+                binding.tvNotes.text = appointment.notes
                 binding.tvNotes.visibility = android.view.View.VISIBLE
             } else {
                 binding.tvNotes.visibility = android.view.View.GONE
             }
 
-            // Map DB Status -> UI Status for display
+            // Map DB Status -> UI display label + color
             val uiStatus = when (appointment.status) {
                 "Terjadwal" -> "Menunggu"
-                "Selesai" -> "Hadir"
+                "Selesai"   -> "Hadir"
                 "Dibatalkan" -> "Tidak Hadir"
-                else -> appointment.status // Fallback
+                else        -> appointment.status ?: "-"
             }
-            binding.tvStatus.text = "Status: $uiStatus"
+            binding.tvStatus.text = uiStatus
 
-            // Set Color
-            val colorRes = when (uiStatus) {
-                "Menunggu" -> com.project.fisionettest.R.color.status_waiting
-                "Hadir" -> com.project.fisionettest.R.color.status_present
-                "Tidak Hadir" -> com.project.fisionettest.R.color.status_absent
-                else -> com.project.fisionettest.R.color.black
+            // Status chip color + accent bar color
+            val statusColor = when (uiStatus) {
+                "Menunggu"    -> "#F59E0B" // Amber
+                "Hadir"       -> "#10B981" // Green
+                "Tidak Hadir" -> "#EF4444" // Red
+                else          -> "#6B7280" // Gray
             }
-            binding.tvStatus.setTextColor(itemView.context.getColor(colorRes))
+            binding.tvStatus.backgroundTintList =
+                android.content.res.ColorStateList.valueOf(Color.parseColor(statusColor))
+
+            // Therapist details
+            val therapistText = appointment.profiles?.displayName ?: "-"
+            binding.tvAppointmentDetails?.text = "Pembuat: $therapistText"
+
+            // Left accent bar color matches chip
+            binding.viewAccent.setBackgroundColor(Color.parseColor(statusColor))
+
+            // Show Serve button only if status is "Terjadwal"
+            if (appointment.status == "Terjadwal") {
+                binding.btnServe.visibility = android.view.View.VISIBLE
+                binding.btnServe.setOnClickListener {
+                    onServeClick?.invoke(appointment)
+                }
+            } else {
+                binding.btnServe.visibility = android.view.View.GONE
+            }
+        }
+
+        private fun formatDate(dateStr: String?): String {
+            if (dateStr.isNullOrBlank()) return "—"
+            return try {
+                val sdf = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
+                val display = java.text.SimpleDateFormat("dd MMM yyyy", java.util.Locale("id", "ID"))
+                val date = sdf.parse(dateStr)
+                if (date != null) display.format(date) else dateStr
+            } catch (e: Exception) {
+                dateStr
+            }
         }
     }
 

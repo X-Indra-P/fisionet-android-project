@@ -59,8 +59,8 @@ class RegisterFragment : Fragment() {
             if (password.isBlank()) {
                 binding.tilPassword.error = "Password harus diisi"
                 isValid = false
-            } else if (password.length < 6) {
-                binding.tilPassword.error = "Password minimal 6 karakter"
+            } else if (password.length < 8) {
+                binding.tilPassword.error = "Password minimal 8 karakter"
                 isValid = false
             }
 
@@ -89,7 +89,7 @@ class RegisterFragment : Fragment() {
                 }
 
                 
-                Toast.makeText(requireContext(), "Registrasi berhasil! Silakan login.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Registrasi berhasil!", Toast.LENGTH_SHORT).show()
                 findNavController().navigate(R.id.action_register_to_login)
             } catch (e: Exception) {
                 Toast.makeText(requireContext(), "Registrasi gagal: ${e.message}", Toast.LENGTH_LONG).show()

@@ -9,11 +9,13 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.project.fisionettest.R
 import com.project.fisionettest.data.SupabaseClient
 import com.project.fisionettest.data.model.Transaction
 import com.project.fisionettest.databinding.FragmentTransactionHistoryBinding
-import com.project.fisionettest.R
+import com.project.fisionettest.utils.AppPreferences
 import io.github.jan.supabase.postgrest.from
+import io.github.jan.supabase.postgrest.query.Columns
 import io.github.jan.supabase.postgrest.query.Order
 import kotlinx.coroutines.launch
 
@@ -22,6 +24,7 @@ class TransactionHistoryFragment : Fragment() {
     private var _binding: FragmentTransactionHistoryBinding? = null
     private val binding get() = _binding!!
     private lateinit var adapter: TransactionAdapter
+    private lateinit var prefs: AppPreferences
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -34,6 +37,7 @@ class TransactionHistoryFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        prefs = AppPreferences(requireContext())
 
         setupRecyclerView()
         loadTransactions()
@@ -46,11 +50,13 @@ class TransactionHistoryFragment : Fragment() {
     private fun setupRecyclerView() {
         adapter = TransactionAdapter { transaction ->
             if (transaction.id != null) {
-                // Navigate to detail
                 val bundle = Bundle().apply {
                     putInt("transactionId", transaction.id)
                 }
-                findNavController().navigate(R.id.action_transactionHistoryFragment_to_transactionDetailFragment, bundle)
+                findNavController().navigate(
+                    R.id.action_transactionHistoryFragment_to_transactionDetailFragment,
+                    bundle
+                )
             }
         }
         binding.rvTransactions.layoutManager = LinearLayoutManager(requireContext())
@@ -60,16 +66,23 @@ class TransactionHistoryFragment : Fragment() {
     private fun loadTransactions() {
         lifecycleScope.launch {
             try {
+                // Jika ada patientId dari argument, tampilkan semua transaksi pasien itu
+                // (tidak perlu filter cabang — dokter lain boleh lihat riwayat pasien lintas cabang)
                 val patientId = arguments?.getInt("patientId", -1) ?: -1
-                
+                val clinic = prefs.clinic  // Cabang terapis yang sedang login
+
                 val transactions = SupabaseClient.client
                     .from("transactions")
-                    .select(columns = io.github.jan.supabase.postgrest.query.Columns.raw("*, patients(*), packages(*), diagnosis(*)")) {
+                    .select(columns = Columns.raw("*, patients(*), cabang_package(*, packages(*)), diagnosis(*)")) {
                         if (patientId != -1) {
-                            filter {
-                                eq("patient_id", patientId)
-                            }
+                            // Dipanggil dari PatientDetail — tampilkan semua riwayat pasien itu
+                            filter { eq("patient_id", patientId) }
+                        } else if (!clinic.isNullOrBlank()) {
+                            // Dipanggil dari CashierMenu — filter per cabang terapis
+                            val clinicId = com.project.fisionettest.utils.ClinicMapper.toId(clinic) ?: 0
+                            filter { eq("id_cabang", clinicId) }
                         }
+                        // Jika keduanya tidak ada (fallback / admin), tampilkan semua
                         order("created_at", order = Order.DESCENDING)
                     }
                     .decodeList<Transaction>()

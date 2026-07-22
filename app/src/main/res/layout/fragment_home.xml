@@ -11,7 +11,7 @@
         android:id="@+id/tv_home_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Daftar Pasien"
+        android:text="Layani Pasien"
         android:textSize="24sp"
         android:textStyle="bold"
         android:textColor="@color/text_primary"
@@ -59,6 +59,31 @@
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
+    <!-- Filter & Sort Row -->
+    <LinearLayout
+        android:id="@+id/layout_filters"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="12dp"
+        app:layout_constraintTop_toBottomOf="@id/cv_search">
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip_sort"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Urutkan: A-Z"
+            style="@style/Widget.MaterialComponents.Chip.Action"
+            android:layout_marginEnd="8dp"/>
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip_filter_gender"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Gender: Semua"
+            style="@style/Widget.MaterialComponents.Chip.Action" />
+    </LinearLayout>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_patients"
         android:layout_width="0dp"
@@ -66,11 +91,21 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cv_search"
+        app:layout_constraintTop_toBottomOf="@id/layout_filters"
         android:layout_marginTop="16dp" 
         android:clipToPadding="false"
         android:paddingBottom="80dp"/> 
         <!-- Added bottom padding for FAB -->
+
+    <ProgressBar
+        android:id="@+id/pb_loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/layout_filters"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <TextView
         android:id="@+id/tv_empty"
@@ -83,7 +118,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cv_search" />
+        app:layout_constraintTop_toBottomOf="@id/layout_filters" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_add_patient"

@@ -36,10 +36,25 @@ class AdminDashboardFragment : Fragment() {
         setupViewPager()
 
         binding.btnLogout.setOnClickListener {
-            lifecycleScope.launch {
-                SupabaseClient.client.auth.signOut()
-                findNavController().navigate(R.id.action_adminDashboard_to_login)
-            }
+            com.google.android.material.dialog.MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Keluar")
+                .setMessage("Apakah Anda yakin ingin keluar?")
+                .setNegativeButton("Batal", null)
+                .setPositiveButton("Keluar") { dialog, _ ->
+                    dialog.dismiss()
+                    lifecycleScope.launch {
+                        try {
+                            SupabaseClient.client.auth.signOut()
+                            // Clear login preferences/session if needed
+                            val prefs = com.project.fisionettest.utils.AppPreferences(requireContext())
+                            prefs.clearSession()
+                            findNavController().navigate(R.id.action_adminDashboard_to_login)
+                        } catch (e: Exception) {
+                            android.widget.Toast.makeText(requireContext(), "Gagal keluar: ${e.message}", android.widget.Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+                .show()
         }
     }
 
@@ -67,8 +82,11 @@ class AdminDashboardFragment : Fragment() {
 
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
             tab.text = when (position) {
-                0 -> "⏳  Menunggu"
-                1 -> "✅  Disetujui"
+                0 -> "Menunggu"
+                1 -> "Terapis"
+                2 -> "Statistik"
+                3 -> "Pasien"
+                4 -> "Paket"
                 else -> ""
             }
         }.attach()
