@@ -101,6 +101,7 @@ class TherapistProfileFragment : Fragment() {
         isEditMode = enabled
         binding.etName.isEnabled = enabled
         binding.etPlaceOfBirth.isEnabled = enabled
+        binding.etDateOfBirth.isEnabled = enabled
         binding.etPhone.isEnabled = enabled
         binding.etAddress.isEnabled = enabled
         binding.btnEditPhoto.visibility = if (enabled) View.VISIBLE else View.GONE
@@ -134,8 +135,6 @@ class TherapistProfileFragment : Fragment() {
                     binding.etDateOfBirth.setText(profile.dateOfBirth ?: "")
                     binding.etPhone.setText(profile.phone ?: "")
                     binding.etAddress.setText(profile.address ?: "")
-                    
-                    updateAgeDisplay(profile.dateOfBirth)
 
                     if (!profile.avatarUrl.isNullOrEmpty()) {
                         binding.ivAvatar.load(profile.avatarUrl) {
@@ -175,7 +174,6 @@ class TherapistProfileFragment : Fragment() {
             val sdf = SimpleDateFormat(myFormat, Locale.US)
             val selectedDateStr = sdf.format(calendar.time)
             binding.etDateOfBirth.setText(selectedDateStr)
-            updateAgeDisplay(selectedDateStr)
         }
 
         DatePickerDialog(
@@ -185,33 +183,6 @@ class TherapistProfileFragment : Fragment() {
             calendar.get(Calendar.MONTH),
             calendar.get(Calendar.DAY_OF_MONTH)
         ).show()
-    }
-
-    private fun updateAgeDisplay(dateOfBirthStr: String?) {
-        if (dateOfBirthStr.isNullOrEmpty()) {
-            binding.etAge.setText("-")
-            return
-        }
-        try {
-            val parts = dateOfBirthStr.split("-")
-            val birthYear = parts[0].toInt()
-            val birthMonth = parts[1].toInt()
-            val birthDay = parts[2].toInt()
-
-            val today = Calendar.getInstance()
-            val currentYear = today.get(Calendar.YEAR)
-            val currentMonth = today.get(Calendar.MONTH) + 1
-            val currentDay = today.get(Calendar.DAY_OF_MONTH)
-
-            var age = currentYear - birthYear
-            if (currentMonth < birthMonth || (currentMonth == birthMonth && currentDay < birthDay)) {
-                age--
-            }
-            binding.etAge.setText("$age Tahun")
-        } catch (e: Exception) {
-            e.printStackTrace()
-            binding.etAge.setText("-")
-        }
     }
 
     private fun saveProfileChanges() {

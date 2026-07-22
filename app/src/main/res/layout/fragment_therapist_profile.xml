@@ -150,55 +150,27 @@
                             android:enabled="false" />
                     </com.google.android.material.textfield.TextInputLayout>
 
-                    <LinearLayout
+                    <!-- Tanggal Lahir -->
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/til_date_of_birth"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:baselineAligned="false">
-
-                        <!-- Tanggal Lahir -->
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:id="@+id/til_date_of_birth"
-                            android:layout_width="0dp"
+                        android:hint="Tanggal Lahir"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        app:boxStrokeColor="@color/primary_blue"
+                        app:hintTextColor="@color/primary_blue"
+                        android:layout_marginBottom="16dp">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/et_date_of_birth"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1.3"
-                            android:hint="Tanggal Lahir"
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                            app:boxStrokeColor="@color/primary_blue"
-                            app:hintTextColor="@color/primary_blue"
-                            android:layout_marginEnd="12dp">
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/et_date_of_birth"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:inputType="none"
-                                android:focusable="false"
-                                android:clickable="true"
-                                android:textColor="@color/text_primary"
-                                android:textSize="15sp"
-                                android:enabled="false" />
-                        </com.google.android.material.textfield.TextInputLayout>
-
-                        <!-- Umur (Read-Only) -->
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:id="@+id/til_age"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="0.7"
-                            android:hint="Umur"
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/et_age"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:inputType="none"
-                                android:focusable="false"
-                                android:clickable="false"
-                                android:textColor="@color/text_secondary"
-                                android:textSize="15sp"
-                                android:enabled="false" />
-                        </com.google.android.material.textfield.TextInputLayout>
-                    </LinearLayout>
+                            android:inputType="none"
+                            android:focusable="false"
+                            android:clickable="true"
+                            android:textColor="@color/text_primary"
+                            android:textSize="15sp"
+                            android:enabled="false" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
