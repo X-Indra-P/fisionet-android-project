@@ -50,8 +50,8 @@ class DashboardFragment : Fragment() {
         setupAppointmentsRecyclerView()
         loadStatistics()
 
-        // Tampilkan dialog jika user adalah terapis dan belum memilih cabang bertugas
-        if (prefs.userRole == 2 && prefs.clinicId <= 0) {
+        // Tampilkan dialog jika user adalah terapis dan belum memilih cabang di sesi ini
+        if (prefs.userRole == 2 && !com.project.fisionettest.MainActivity.hasSelectedBranchThisSession) {
             showBranchSelectionDialog()
         }
 
@@ -224,6 +224,7 @@ class DashboardFragment : Fragment() {
                         val matchedClinic = clinicList.find { it.nama_cabang == selectedClinic }
                         prefs.clinic = selectedClinic
                         prefs.clinicId = matchedClinic?.id ?: 0
+                        com.project.fisionettest.MainActivity.hasSelectedBranchThisSession = true
                         binding.tvClinicName.text = selectedClinic
                         binding.tvClinicName.visibility = View.VISIBLE
                         dialog.dismiss()

@@ -183,10 +183,8 @@ class LoginFragment : Fragment() {
                         // ── Simpan sesi ke SharedPreferences ──────────────────
                         prefs.userId   = userId
                         prefs.userRole = profile.role
-                        if (prefs.clinicId <= 0 && profile.id_cabang != null) {
-                            prefs.clinicId = profile.id_cabang
-                            prefs.clinic   = com.project.fisionettest.utils.ClinicMapper.toName(profile.id_cabang)
-                        }
+                        prefs.clinic   = com.project.fisionettest.utils.ClinicMapper.toName(profile.id_cabang)
+                        prefs.clinicId = profile.id_cabang ?: 0
 
                         // Ambil display name dari metadata
                         val metadata = user.userMetadata
