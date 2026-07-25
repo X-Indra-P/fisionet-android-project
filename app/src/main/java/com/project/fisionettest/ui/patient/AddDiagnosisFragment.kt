@@ -81,7 +81,7 @@ class AddDiagnosisFragment : Fragment() {
         lifecycleScope.launch {
             try {
                 val prefs = com.project.fisionettest.utils.AppPreferences(requireContext())
-                val packages = SupabaseClient.getCabangPackagesForClinic(prefs.clinic)
+                val packages = SupabaseClient.getCabangPackagesForClinic(prefs.clinicId)
                 packageList = packages
                 val names = packages.map { "${it.packages?.name} - Alat: ${it.packages?.tools?.joinToString(", ")}" }
                 val adapter = android.widget.ArrayAdapter<String>(
@@ -162,6 +162,7 @@ class AddDiagnosisFragment : Fragment() {
 
         lifecycleScope.launch {
             try {
+                val prefs = AppPreferences(requireContext())
                 // Use JsonObject to avoid sending null 'id' and 'created_at' and to be safe
                 val newRecord = kotlinx.serialization.json.buildJsonObject {
                     put("patient_id", patientId)
@@ -170,8 +171,8 @@ class AddDiagnosisFragment : Fragment() {
                     put("vital_sign", vitalSign)
                     put("patient_problem", patientProblem)
                     put("inspection", inspection)
-                    put("profile_id", AppPreferences(requireContext()).userId)
-                    put("id_cabang", com.project.fisionettest.utils.ClinicMapper.toId(AppPreferences(requireContext()).clinic))
+                    put("profile_id", prefs.userId)
+                    put("id_cabang", prefs.clinicId)
                     put("cabang_package_id", selectedPackage?.id)
                     put("status", "Proses")
                 }
@@ -182,7 +183,6 @@ class AddDiagnosisFragment : Fragment() {
                 }.decodeSingle<Diagnosis>()
 
                 // Auto-create transaction with payment_status = pending
-                val prefs = AppPreferences(requireContext())
                 val user = SupabaseClient.client.auth.currentUserOrNull()
                 val newTransaction = kotlinx.serialization.json.buildJsonObject {
                     put("date", selectedDate)
@@ -191,7 +191,7 @@ class AddDiagnosisFragment : Fragment() {
                     put("cabang_package_id", selectedPackage?.id)
                     put("total_amount", selectedPackage?.packages?.price ?: 0.0)
                     put("payment_status", "pending")
-                    put("id_cabang", com.project.fisionettest.utils.ClinicMapper.toId(prefs.clinic))
+                    put("id_cabang", prefs.clinicId)
                     put("profile_id", user?.id)
                 }
                 SupabaseClient.client.from("transactions").insert(newTransaction)

@@ -157,18 +157,12 @@ object SupabaseClient {
         }
     }
 
-    suspend fun getCabangPackagesForClinic(clinicName: String?): List<com.project.fisionettest.data.model.CabangPackage> {
-        val clinicId = when (clinicName) {
-            "Cabang 1" -> 1
-            "Cabang 2" -> 2
-            else -> null
-        }
-
+    suspend fun getCabangPackagesForClinic(clinicId: Int?): List<com.project.fisionettest.data.model.CabangPackage> {
         try {
             val mappings = client.from("cabang_package").select(
                 columns = io.github.jan.supabase.postgrest.query.Columns.raw("*, packages(*)")
             ) {
-                if (clinicId != null) {
+                if (clinicId != null && clinicId > 0) {
                     filter { eq("id_cabang", clinicId) }
                 }
             }.decodeList<com.project.fisionettest.data.model.CabangPackage>()

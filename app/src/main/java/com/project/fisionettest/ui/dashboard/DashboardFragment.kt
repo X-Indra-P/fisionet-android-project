@@ -51,7 +51,7 @@ class DashboardFragment : Fragment() {
         loadStatistics()
 
         // Tampilkan dialog jika user adalah terapis dan belum memilih cabang bertugas
-        if (prefs.userRole == 2 && prefs.clinic.isNullOrBlank()) {
+        if (prefs.userRole == 2 && prefs.clinicId <= 0) {
             showBranchSelectionDialog()
         }
 
@@ -221,7 +221,9 @@ class DashboardFragment : Fragment() {
                     }
                     .setCancelable(false)
                     .setPositiveButton("Konfirmasi") { dialog, _ ->
+                        val matchedClinic = clinicList.find { it.nama_cabang == selectedClinic }
                         prefs.clinic = selectedClinic
+                        prefs.clinicId = matchedClinic?.id ?: 0
                         binding.tvClinicName.text = selectedClinic
                         binding.tvClinicName.visibility = View.VISIBLE
                         dialog.dismiss()

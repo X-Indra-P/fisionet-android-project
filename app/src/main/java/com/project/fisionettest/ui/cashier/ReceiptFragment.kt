@@ -105,7 +105,7 @@ class ReceiptFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             try {
                 val prefs = com.project.fisionettest.utils.AppPreferences(requireContext())
-                val packages = SupabaseClient.getCabangPackagesForClinic(prefs.clinic)
+                val packages = SupabaseClient.getCabangPackagesForClinic(prefs.clinicId)
                 val matchedPkg = packages.firstOrNull { it.id == trx.cabang_package_id }
                 if (matchedPkg != null) {
                     val correctToolsStr = matchedPkg.packages?.tools?.joinToString(", ") ?: ""

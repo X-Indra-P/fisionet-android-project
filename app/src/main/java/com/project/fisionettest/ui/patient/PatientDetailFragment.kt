@@ -182,7 +182,7 @@ class PatientDetailFragment : Fragment() {
 
                 // Load packages for tools mapping
                 val prefs = com.project.fisionettest.utils.AppPreferences(requireContext())
-                val packages = SupabaseClient.getCabangPackagesForClinic(prefs.clinic)
+                val packages = SupabaseClient.getCabangPackagesForClinic(prefs.clinicId)
                 val packageToolsMap = packages.associate { (it.packages?.name ?: "") to (it.packages?.tools?.joinToString(", ") ?: "") }
 
                 _binding?.let { b ->

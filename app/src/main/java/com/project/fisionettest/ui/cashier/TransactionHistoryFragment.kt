@@ -77,10 +77,9 @@ class TransactionHistoryFragment : Fragment() {
                         if (patientId != -1) {
                             // Dipanggil dari PatientDetail — tampilkan semua riwayat pasien itu
                             filter { eq("patient_id", patientId) }
-                        } else if (!clinic.isNullOrBlank()) {
+                        } else if (prefs.clinicId > 0) {
                             // Dipanggil dari CashierMenu — filter per cabang terapis
-                            val clinicId = com.project.fisionettest.utils.ClinicMapper.toId(clinic) ?: 0
-                            filter { eq("id_cabang", clinicId) }
+                            filter { eq("id_cabang", prefs.clinicId) }
                         }
                         // Jika keduanya tidak ada (fallback / admin), tampilkan semua
                         order("created_at", order = Order.DESCENDING)

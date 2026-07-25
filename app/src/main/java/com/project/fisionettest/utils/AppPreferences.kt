@@ -9,6 +9,7 @@ class AppPreferences(context: Context) {
 
     companion object {
         const val KEY_CLINIC     = "clinic"
+        const val KEY_CLINIC_ID  = "clinic_id"
         const val KEY_USER_ID    = "user_id"
         const val KEY_USER_NAME  = "user_name"
         const val KEY_USER_ROLE  = "user_role"   // 1 = Admin, 2 = Therapist
@@ -39,6 +40,10 @@ class AppPreferences(context: Context) {
         get() = getString(KEY_CLINIC)
         set(value) { if (value != null) saveString(KEY_CLINIC, value) else remove(KEY_CLINIC) }
 
+    var clinicId: Int
+        get() = getInt(KEY_CLINIC_ID, 0)
+        set(value) { saveInt(KEY_CLINIC_ID, value) }
+
     var userId: String?
         get() = getString(KEY_USER_ID)
         set(value) { if (value != null) saveString(KEY_USER_ID, value) else remove(KEY_USER_ID) }
@@ -60,6 +65,7 @@ class AppPreferences(context: Context) {
     fun clearSession() {
         sharedPreferences.edit()
             .remove(KEY_CLINIC)
+            .remove(KEY_CLINIC_ID)
             .remove(KEY_USER_ID)
             .remove(KEY_USER_NAME)
             .remove(KEY_USER_ROLE)

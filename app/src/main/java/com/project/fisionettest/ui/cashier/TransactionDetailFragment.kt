@@ -107,7 +107,7 @@ class TransactionDetailFragment : Fragment() {
             viewLifecycleOwner.lifecycleScope.launch {
                 try {
                     val prefs = com.project.fisionettest.utils.AppPreferences(requireContext())
-                    val packages = SupabaseClient.getCabangPackagesForClinic(prefs.clinic)
+                    val packages = SupabaseClient.getCabangPackagesForClinic(prefs.clinicId)
                     val matchedPkg = packages.firstOrNull { it.id == transaction.cabang_package_id }
                     val toolsStr = if (matchedPkg != null && matchedPkg.packages?.tools?.isNotEmpty() == true) {
                         matchedPkg.packages.tools.joinToString(", ")

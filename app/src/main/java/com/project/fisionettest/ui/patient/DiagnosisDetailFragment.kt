@@ -216,7 +216,7 @@ class DiagnosisDetailFragment : Fragment() {
                 val pendingTrx = transactions.firstOrNull { it.payment_status == "pending" }
 
                 val prefs = com.project.fisionettest.utils.AppPreferences(requireContext())
-                val packages = SupabaseClient.getCabangPackagesForClinic(prefs.clinic)
+                val packages = SupabaseClient.getCabangPackagesForClinic(prefs.clinicId)
                 val packageToolsMap = packages.associate { (it.packages?.name ?: "") to (it.packages?.tools?.joinToString(", ") ?: "") }
 
                  // 3. Fetch progress records for this diagnosis
@@ -297,7 +297,7 @@ class DiagnosisDetailFragment : Fragment() {
             initialBinding.pbLoading.visibility = View.VISIBLE
             try {
                 val prefs = com.project.fisionettest.utils.AppPreferences(requireContext())
-                val packageList = SupabaseClient.getCabangPackagesForClinic(prefs.clinic)
+                val packageList = SupabaseClient.getCabangPackagesForClinic(prefs.clinicId)
                 val packageNames = packageList.map { pkg ->
                     "${pkg.packages?.name} - Alat: ${pkg.packages?.tools?.joinToString(", ")}"
                 }.toTypedArray()
@@ -339,7 +339,7 @@ class DiagnosisDetailFragment : Fragment() {
                     put("cabang_package_id", selectedPkg.id)
                     put("total_amount", selectedPkg.packages?.price ?: 0.0)
                     put("payment_status", "pending")
-                    put("id_cabang", com.project.fisionettest.utils.ClinicMapper.toId(prefs.clinic))
+                    put("id_cabang", prefs.clinicId)
                     put("profile_id", user?.id)
                 }
                 SupabaseClient.client.from("transactions").insert(newTransaction)
@@ -353,7 +353,7 @@ class DiagnosisDetailFragment : Fragment() {
                     cabang_package_id = selectedPkg.id,
                     status = "Proses",
                     profile_id = prefs.userId,
-                    id_cabang = com.project.fisionettest.utils.ClinicMapper.toId(prefs.clinic)
+                    id_cabang = prefs.clinicId
                 )
                 SupabaseClient.client.from("patient_progress").insert(newProgress)
 

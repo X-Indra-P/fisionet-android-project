@@ -139,7 +139,7 @@ class CashierFragment : Fragment() {
                 })
 
                 // Load paket
-                packageList = SupabaseClient.getCabangPackagesForClinic(prefs.clinic)
+                packageList = SupabaseClient.getCabangPackagesForClinic(prefs.clinicId)
                 val packageAdapter = ArrayAdapter(
                     requireContext(),
                     android.R.layout.simple_spinner_item,
@@ -281,7 +281,7 @@ class CashierFragment : Fragment() {
                     selectedDiagnosis?.id?.let { put("diagnosis_id", it) }
                     put("total_amount", pkg.packages?.price ?: 0.0)
                     put("payment_status", "pending")
-                    put("id_cabang", com.project.fisionettest.utils.ClinicMapper.toId(assignedCabang))
+                    put("id_cabang", prefs.clinicId)
                     put("profile_id", user?.id)
                 }
 
