@@ -19,6 +19,10 @@ import com.project.fisionettest.utils.AppPreferences
 import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.postgrest.from
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import android.widget.Toast
+import com.project.fisionettest.data.model.Clinic
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
@@ -46,8 +50,8 @@ class DashboardFragment : Fragment() {
         setupAppointmentsRecyclerView()
         loadStatistics()
 
-        // Tampilkan dialog jika user adalah terapis dan belum memilih cabang di sesi ini
-        if (prefs.userRole == 2 && !com.project.fisionettest.MainActivity.hasSelectedBranchThisSession) {
+        // Tampilkan dialog jika user adalah terapis dan baru saja login
+        if (prefs.userRole == 2 && com.project.fisionettest.MainActivity.shouldShowBranchSelection) {
             showBranchSelectionDialog()
         }
 
@@ -190,29 +194,51 @@ class DashboardFragment : Fragment() {
     }
 
     private fun showBranchSelectionDialog() {
-        val clinics = arrayOf("Cabang 1", "Cabang 2")
-        var selectedClinic = prefs.clinic ?: "Cabang 1"
-        if (!clinics.contains(selectedClinic)) {
-            selectedClinic = "Cabang 1"
-        }
-        val currentIndex = clinics.indexOf(selectedClinic)
+        lifecycleScope.launch {
+            try {
+                // Fetch clinics dynamically from Supabase
+                val clinicList = withContext(Dispatchers.IO) {
+                    SupabaseClient.client.from("cabang").select().decodeList<Clinic>()
+                }
+                
+                if (clinicList.isEmpty()) {
+                    // Jika tidak ada data cabang di database, matikan flag
+                    com.project.fisionettest.MainActivity.shouldShowBranchSelection = false
+                    return@launch
+                }
 
-        androidx.appcompat.app.AlertDialog.Builder(requireContext())
-            .setTitle("Pilih Cabang Bertugas")
-            .setSingleChoiceItems(clinics, currentIndex) { _, which ->
-                selectedClinic = clinics[which]
+                val clinicNames = clinicList.map { it.nama_cabang }.toTypedArray()
+                var selectedClinic = prefs.clinic ?: clinicNames.firstOrNull() ?: ""
+                
+                var currentIndex = clinicNames.indexOf(selectedClinic)
+                if (currentIndex == -1) {
+                    currentIndex = 0
+                    selectedClinic = clinicNames.first()
+                }
+
+                androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                    .setTitle("Pilih Cabang Bertugas")
+                    .setSingleChoiceItems(clinicNames, currentIndex) { _, which ->
+                        selectedClinic = clinicNames[which]
+                    }
+                    .setCancelable(false)
+                    .setPositiveButton("Konfirmasi") { dialog, _ ->
+                        prefs.clinic = selectedClinic
+                        com.project.fisionettest.MainActivity.shouldShowBranchSelection = false
+                        binding.tvClinicName.text = selectedClinic
+                        binding.tvClinicName.visibility = View.VISIBLE
+                        dialog.dismiss()
+                        loadStatistics()
+                        loadTodayAppointments()
+                    }
+                    .show()
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Toast.makeText(context, "Gagal memuat daftar cabang: ${e.message}", Toast.LENGTH_SHORT).show()
+                // Reset flag agar tidak memblokir UI jika koneksi bermasalah
+                com.project.fisionettest.MainActivity.shouldShowBranchSelection = false
             }
-            .setCancelable(false)
-            .setPositiveButton("Konfirmasi") { dialog, _ ->
-                prefs.clinic = selectedClinic
-                com.project.fisionettest.MainActivity.hasSelectedBranchThisSession = true
-                binding.tvClinicName.text = selectedClinic
-                binding.tvClinicName.visibility = View.VISIBLE
-                dialog.dismiss()
-                loadStatistics()
-                loadTodayAppointments()
-            }
-            .show()
+        }
     }
 
     private fun setupAppointmentsRecyclerView() {

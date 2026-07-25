@@ -156,6 +156,7 @@ class LoginFragment : Fragment() {
                     this.password = password
                 }
                 Toast.makeText(requireContext(), "Login berhasil", Toast.LENGTH_SHORT).show()
+                com.project.fisionettest.MainActivity.shouldShowBranchSelection = true
                 checkUserRoleAndNavigate()
             } catch (e: Exception) {
                 val errorMessage = e.message ?: ""
