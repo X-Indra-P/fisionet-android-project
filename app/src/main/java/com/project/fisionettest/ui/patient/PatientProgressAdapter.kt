@@ -57,7 +57,7 @@ class PatientProgressAdapter : ListAdapter<PatientProgress, PatientProgressAdapt
             }
             
             binding.tvProgressNote.text = "Catatan perkembangan: ${progress.progress_note.ifBlank { "Belum ada catatan" }}"
-            binding.tvProgressCabang.text = "Cabang: ${com.project.fisionettest.utils.ClinicMapper.toName(progress.id_cabang)}"
+            binding.tvProgressCabang.text = "Cabang: ${com.project.fisionettest.utils.ClinicMapper.toName(progress.id_cabang, progress.cabang)}"
             binding.tvProgressTherapist.text = "Terapis: ${progress.profiles?.displayName ?: "-"}"
         }
     }

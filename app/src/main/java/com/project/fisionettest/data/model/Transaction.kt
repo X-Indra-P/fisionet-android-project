@@ -19,6 +19,7 @@ data class Transaction(
     // Relations for fetching (will be null during insert)
     val patients: Patient? = null,
     val diagnosis: Diagnosis? = null,
+    val cabang: Clinic? = null,
     val cabang_package: CabangPackage? = null,
     val profiles: Profile? = null
 )

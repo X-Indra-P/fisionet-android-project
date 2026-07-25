@@ -174,7 +174,7 @@ class PatientDetailFragment : Fragment() {
 
                    // Load medical records (now diagnosis)
                 val records = SupabaseClient.client.from("diagnosis").select(
-                    columns = io.github.jan.supabase.postgrest.query.Columns.raw("*, cabang_package(*, packages(*)), profiles(*)")
+                    columns = io.github.jan.supabase.postgrest.query.Columns.raw("*, cabang_package(*, packages(*)), profiles(*), cabang(*)")
                 ) {
                     filter { eq("patient_id", patientId) }
                     order("id", Order.DESCENDING)
@@ -191,7 +191,9 @@ class PatientDetailFragment : Fragment() {
                 }
                 
                 // Load patient progress
-                val progressList = SupabaseClient.client.from("patient_progress").select {
+                val progressList = SupabaseClient.client.from("patient_progress").select(
+                    columns = io.github.jan.supabase.postgrest.query.Columns.raw("*, profiles(*), cabang_package(*, packages(*)), cabang(*)")
+                ) {
                     filter { eq("patient_id", patientId) }
                     order("id", Order.DESCENDING)
                 }.decodeList<PatientProgress>()

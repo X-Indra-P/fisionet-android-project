@@ -221,7 +221,7 @@ class DiagnosisDetailFragment : Fragment() {
 
                  // 3. Fetch progress records for this diagnosis
                  val progressList = SupabaseClient.client.from("patient_progress").select(
-                     columns = io.github.jan.supabase.postgrest.query.Columns.raw("*, profiles(*), cabang_package(*, packages(*))")
+                     columns = io.github.jan.supabase.postgrest.query.Columns.raw("*, profiles(*), cabang_package(*, packages(*)), cabang(*)")
                  ) {
                      filter {
                           eq("patient_id", patientId)

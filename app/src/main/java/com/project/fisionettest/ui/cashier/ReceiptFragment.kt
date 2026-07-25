@@ -64,7 +64,7 @@ class ReceiptFragment : Fragment() {
             try {
                 // Fetch transaction details with patient, package, and diagnosis relationships
                 val trx = SupabaseClient.client.from("transactions")
-                    .select(columns = Columns.raw("*, patients(*), cabang_package(*, packages(*)), diagnosis(*, profiles(*)), profiles(*)")) {
+                    .select(columns = Columns.raw("*, patients(*), cabang_package(*, packages(*)), diagnosis(*, profiles(*)), profiles(*), cabang(*)")) {
                         filter { eq("id", transactionId) }
                     }.decodeList<Transaction>().firstOrNull()
 
@@ -86,7 +86,7 @@ class ReceiptFragment : Fragment() {
     }
 
     private fun displayReceipt(trx: Transaction) {
-        binding.tvClinicBranch.text = com.project.fisionettest.utils.ClinicMapper.toName(trx.id_cabang)
+        binding.tvClinicBranch.text = com.project.fisionettest.utils.ClinicMapper.toName(trx.id_cabang, trx.cabang)
         binding.tvReceiptDate.text = "Tanggal: ${trx.date}"
         binding.tvPatientName.text = trx.patients?.name ?: "-"
         binding.tvTherapistName.text = trx.profiles?.displayName ?: trx.diagnosis?.profiles?.displayName ?: "-"

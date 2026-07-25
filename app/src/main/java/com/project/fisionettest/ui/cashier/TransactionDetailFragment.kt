@@ -66,7 +66,7 @@ class TransactionDetailFragment : Fragment() {
             try {
                 val transaction = SupabaseClient.client
                     .from("transactions")
-                    .select(columns = Columns.raw("*, patients(*), cabang_package(*, packages(*)), diagnosis(*), profiles(*)")) {
+                    .select(columns = Columns.raw("*, patients(*), cabang_package(*, packages(*)), diagnosis(*), profiles(*), cabang(*)")) {
                         filter { eq("id", id) }
                     }
                     .decodeSingleOrNull<Transaction>()
@@ -129,7 +129,7 @@ class TransactionDetailFragment : Fragment() {
 
         // Info cabang
         if (transaction.id_cabang != null) {
-            binding.tvCabangDetail.text = com.project.fisionettest.utils.ClinicMapper.toName(transaction.id_cabang)
+            binding.tvCabangDetail.text = com.project.fisionettest.utils.ClinicMapper.toName(transaction.id_cabang, transaction.cabang)
             binding.tvCabangDetail.visibility = View.VISIBLE
         } else {
             binding.tvCabangDetail.visibility = View.GONE

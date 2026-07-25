@@ -14,6 +14,7 @@ data class PatientProgress(
     val created_at: String? = null,
     val profile_id: String? = null,
     val id_cabang: Int? = null,
+    val cabang: Clinic? = null,
     val profiles: Profile? = null,
     val cabang_package: CabangPackage? = null
 )

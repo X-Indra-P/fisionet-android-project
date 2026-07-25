@@ -73,7 +73,7 @@ class TransactionHistoryFragment : Fragment() {
 
                 val transactions = SupabaseClient.client
                     .from("transactions")
-                    .select(columns = Columns.raw("*, patients(*), cabang_package(*, packages(*)), diagnosis(*)")) {
+                    .select(columns = Columns.raw("*, patients(*), cabang_package(*, packages(*)), diagnosis(*), cabang(*)")) {
                         if (patientId != -1) {
                             // Dipanggil dari PatientDetail — tampilkan semua riwayat pasien itu
                             filter { eq("patient_id", patientId) }

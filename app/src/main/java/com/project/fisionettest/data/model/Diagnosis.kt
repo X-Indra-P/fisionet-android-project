@@ -16,6 +16,7 @@ data class Diagnosis(
     val date: String,
     val profile_id: String? = null,
     val id_cabang: Int? = null,
+    val cabang: Clinic? = null,
     val cabang_package_id: Int? = null,
     val cabang_package: CabangPackage? = null,
     val profiles: Profile? = null,

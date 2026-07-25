@@ -204,6 +204,7 @@ class DashboardFragment : Fragment() {
                 if (clinicList.isEmpty()) {
                     return@launch
                 }
+                com.project.fisionettest.utils.ClinicMapper.updateCache(clinicList)
 
                 val clinicNames = clinicList.map { it.nama_cabang }.toTypedArray()
                 var selectedClinic = prefs.clinic ?: clinicNames.firstOrNull() ?: ""

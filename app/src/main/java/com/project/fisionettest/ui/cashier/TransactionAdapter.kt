@@ -53,7 +53,7 @@ class TransactionAdapter(private val onItemClick: (Transaction) -> Unit) :
 
             // Cabang
             if (transaction.id_cabang != null) {
-                binding.tvCabang.text = com.project.fisionettest.utils.ClinicMapper.toName(transaction.id_cabang)
+                binding.tvCabang.text = com.project.fisionettest.utils.ClinicMapper.toName(transaction.id_cabang, transaction.cabang)
                 binding.tvCabang.visibility = View.VISIBLE
             } else {
                 binding.tvCabang.visibility = View.GONE

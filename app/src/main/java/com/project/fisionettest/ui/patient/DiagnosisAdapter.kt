@@ -56,7 +56,7 @@ class DiagnosisAdapter(
             binding.tvDiagnosis.text = "Diagnosis: ${record.diagnosa}"
             binding.tvVitalSign.text = "Vital Sign: ${record.vital_sign}"
             binding.tvTherapistName.text = "Terapis: ${record.profiles?.displayName ?: "-"}"
-            binding.tvCabang.text = "Cabang: ${com.project.fisionettest.utils.ClinicMapper.toName(record.id_cabang)}"
+            binding.tvCabang.text = "Cabang: ${com.project.fisionettest.utils.ClinicMapper.toName(record.id_cabang, record.cabang)}"
             
             val pkgName = record.cabang_package?.packages?.name
             val toolsText = if (pkgName != null) packageToolsMap[pkgName] ?: "-" else "-"
