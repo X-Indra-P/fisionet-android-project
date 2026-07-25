@@ -50,8 +50,8 @@ class DashboardFragment : Fragment() {
         setupAppointmentsRecyclerView()
         loadStatistics()
 
-        // Tampilkan dialog jika user adalah terapis, baru saja login, dan belum memiliki pilihan cabang tersimpan
-        if (prefs.userRole == 2 && com.project.fisionettest.MainActivity.shouldShowBranchSelection && prefs.clinic.isNullOrBlank()) {
+        // Tampilkan dialog jika user adalah terapis dan belum memilih cabang bertugas
+        if (prefs.userRole == 2 && prefs.clinic.isNullOrBlank()) {
             showBranchSelectionDialog()
         }
 
@@ -202,8 +202,6 @@ class DashboardFragment : Fragment() {
                 }
                 
                 if (clinicList.isEmpty()) {
-                    // Jika tidak ada data cabang di database, matikan flag
-                    com.project.fisionettest.MainActivity.shouldShowBranchSelection = false
                     return@launch
                 }
 
@@ -224,7 +222,6 @@ class DashboardFragment : Fragment() {
                     .setCancelable(false)
                     .setPositiveButton("Konfirmasi") { dialog, _ ->
                         prefs.clinic = selectedClinic
-                        com.project.fisionettest.MainActivity.shouldShowBranchSelection = false
                         binding.tvClinicName.text = selectedClinic
                         binding.tvClinicName.visibility = View.VISIBLE
                         dialog.dismiss()
@@ -235,8 +232,6 @@ class DashboardFragment : Fragment() {
             } catch (e: Exception) {
                 e.printStackTrace()
                 Toast.makeText(context, "Gagal memuat daftar cabang: ${e.message}", Toast.LENGTH_SHORT).show()
-                // Reset flag agar tidak memblokir UI jika koneksi bermasalah
-                com.project.fisionettest.MainActivity.shouldShowBranchSelection = false
             }
         }
     }

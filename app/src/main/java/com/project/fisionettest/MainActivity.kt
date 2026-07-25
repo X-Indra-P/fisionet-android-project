@@ -25,7 +25,6 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         var hasSelectedBranchThisSession = false
-        var shouldShowBranchSelection = false
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

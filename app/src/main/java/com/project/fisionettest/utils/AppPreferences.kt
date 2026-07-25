@@ -59,6 +59,7 @@ class AppPreferences(context: Context) {
     /** Hapus semua data sesi (dipanggil saat logout) */
     fun clearSession() {
         sharedPreferences.edit()
+            .remove(KEY_CLINIC)
             .remove(KEY_USER_ID)
             .remove(KEY_USER_NAME)
             .remove(KEY_USER_ROLE)
