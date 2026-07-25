@@ -45,9 +45,6 @@ class ProfileFragment : Fragment() {
             findNavController().navigate(R.id.action_profile_to_therapist_profile)
         }
 
-        binding.btnChangePassword.setOnClickListener {
-             showChangePasswordDialog()
-        }
 
         binding.btnLogout.setOnClickListener {
             showLogoutConfirmation()
@@ -97,48 +94,6 @@ class ProfileFragment : Fragment() {
         }
     }
 
-    private fun showChangePasswordDialog() {
-        val context = requireContext()
-        val density = resources.displayMetrics.density
-        val paddingHorizontal = (24 * density).toInt()
-        val paddingTop = (24 * density).toInt()
-        
-        val inputLayout = com.google.android.material.textfield.TextInputLayout(context).apply {
-            hint = "Password Baru"
-            setPadding(paddingHorizontal, paddingTop, paddingHorizontal, 0)
-        }
-        val input = com.google.android.material.textfield.TextInputEditText(context).apply {
-            inputType = android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD
-        }
-        inputLayout.addView(input)
-
-        MaterialAlertDialogBuilder(context)
-            .setTitle("Ubah Password")
-            .setView(inputLayout)
-            .setPositiveButton("Simpan") { _, _ ->
-                val newPass = input.text.toString()
-                if (newPass.length >= 8) {
-                    updatePassword(newPass)
-                } else {
-                    Toast.makeText(context, "Password minimal 8 karakter", Toast.LENGTH_SHORT).show()
-                }
-            }
-            .setNegativeButton("Batal", null)
-            .show()
-    }
-
-    private fun updatePassword(newPass: String) {
-        lifecycleScope.launch {
-            try {
-                SupabaseClient.client.auth.updateUser {
-                    password = newPass
-                }
-                Toast.makeText(context, "Password berhasil diubah", Toast.LENGTH_SHORT).show()
-            } catch (e: Exception) {
-                Toast.makeText(context, "Gagal ubah password: ${e.message}", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
 
     private fun loadUserProfile() {
         viewLifecycleOwner.lifecycleScope.launch {
