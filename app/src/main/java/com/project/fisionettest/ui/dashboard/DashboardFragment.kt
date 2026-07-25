@@ -50,8 +50,8 @@ class DashboardFragment : Fragment() {
         setupAppointmentsRecyclerView()
         loadStatistics()
 
-        // Tampilkan dialog jika user adalah terapis dan baru saja login
-        if (prefs.userRole == 2 && com.project.fisionettest.MainActivity.shouldShowBranchSelection) {
+        // Tampilkan dialog jika user adalah terapis, baru saja login, dan belum memiliki pilihan cabang tersimpan
+        if (prefs.userRole == 2 && com.project.fisionettest.MainActivity.shouldShowBranchSelection && prefs.clinic.isNullOrBlank()) {
             showBranchSelectionDialog()
         }
 
